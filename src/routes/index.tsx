@@ -1,6 +1,6 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import SolarStarAngleLineDuotone from "~icons/solar/star-angle-line-duotone";
-import { Button, buttonVariants } from "@heroui/react";
+import { Button } from "@heroui/react";
 import SolarArrowRightLineDuotone from "~icons/solar/arrow-right-line-duotone";
 import SolarDocumentLineDuotone from "~icons/solar/document-line-duotone";
 import SolarStarsLineLineDuotone from "~icons/solar/stars-line-line-duotone";
@@ -11,28 +11,6 @@ export const Route = createFileRoute("/")({ component: App });
 function App() {
   return (
     <>
-      <header className="border-b bg-background/60 inset-x-0 fixed top-0 backdrop-blur-2xl z-10">
-        <div className="inner border-x px-8 py-3 flex items-center justify-between relative">
-          <div className="size-2 bg-background border absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2"></div>
-          <div className="size-2 bg-background border absolute right-0 bottom-0 translate-x-1/2 translate-y-1/2"></div>
-
-          <Link
-            to="/"
-            className="flex items-center gap-1 text-lg font-semibold"
-          >
-            <img src="/archon.svg" className="size-6" alt="" />
-            Archon
-          </Link>
-          <nav className="flex gap-4 items-center">
-            <Link to="/" className="text-sm hover:underline decoration-wavy">
-              Github
-            </Link>
-            <Link className={buttonVariants({ size: "sm" })} to="/">
-              Sign In
-            </Link>
-          </nav>
-        </div>
-      </header>
       <main>
         <div className="inner border-x border-dashed min-h-lvh justify-center flex-col flex py-24 relative">
           <div className="size-1 bg-background border absolute top-0 left-0"></div>
