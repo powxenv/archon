@@ -35,15 +35,15 @@ function App() {
           <div className="max-w-xl text-center mx-auto flex flex-col items-center gap-4">
             <div className="py-1 text-sm pl-2 pr-4 rounded-lg border flex items-center gap-1">
               <SolarStarAngleLineDuotone />
-              Lorem ipsum dolor sit amet.
+              AI-powered documentation
             </div>
             <h1 className="text-5xl font-semibold">
-              Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+              Turn any codebase into clear, structured documentation
             </h1>
             <p className="max-w-md text-lg">
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Ut
-              tenetur quo explicabo consequuntur perferendis eos natus, dolore
-              quidem architecto incidunt nesciunt.
+              Archon analyzes your repositories and microservices to understand
+              how everything fits together, then generates technical docs,
+              onboarding guides, and user documentation all in one place.
             </p>
 
             <Button>
@@ -51,16 +51,16 @@ function App() {
             </Button>
           </div>
 
-          <div className="px-8 grid grid-cols-3 gap-4 mt-8">
+          <div className="px-8 grid grid-cols-3 items-center gap-4 mt-8">
             <div className="rotate-2 border border-dashed p-1 rounded-2xl">
               <div className="border p-6 rounded-xl bg-surface shadow-xl shadow-black/6">
                 <div className="size-10 border flex justify-center items-center rounded-lg">
                   <SolarDocumentLineDuotone />
                 </div>
-                <h3 className="text-lg my-1">Lorem ipsum dolor sit amet.</h3>
+                <h3 className="text-lg my-1">Complete technical docs</h3>
                 <p>
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                  Aliquid ratione quas.
+                  Generates structured documentation covering your architecture,
+                  APIs, and service interactions without manual effort.
                 </p>
               </div>
             </div>
@@ -70,10 +70,10 @@ function App() {
                 <div className="size-10 border flex justify-center items-center rounded-lg">
                   <SolarStarsLineLineDuotone />
                 </div>
-                <h3 className="text-lg my-1">Lorem ipsum dolor sit amet.</h3>
+                <h3 className="text-lg my-1">Understands your architecture</h3>
                 <p>
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                  Aliquid ratione quas.
+                  Traces data flows and dependencies across your entire system,
+                  even across microservice boundaries.
                 </p>
               </div>
             </div>
@@ -83,10 +83,10 @@ function App() {
                 <div className="size-10 border flex justify-center items-center rounded-lg">
                   <SolarUsersGroupTwoRoundedLineDuotone />
                 </div>
-                <h3 className="text-lg my-1">Lorem ipsum dolor sit amet.</h3>
+                <h3 className="text-lg my-1">Onboarding and user guides</h3>
                 <p>
-                  Lorem ipsum dolor sit amet consectetur, adipisicing elit.
-                  Aliquid ratione quas.
+                  Produces guides that help new team members get up to speed
+                  quickly, from setup instructions to system overviews.
                 </p>
               </div>
             </div>
