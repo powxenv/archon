@@ -11,7 +11,7 @@ export const Route = createFileRoute("/")({ component: App });
 function App() {
   return (
     <>
-      <header className="border-b bg-background">
+      <header className="border-b bg-background/60 inset-x-0 fixed top-0 backdrop-blur-2xl">
         <div className="inner border-x px-8 py-3 flex items-center justify-between">
           <Link
             to="/"
@@ -31,7 +31,7 @@ function App() {
         </div>
       </header>
       <main>
-        <div className="inner border-x min-h-lvh justify-center flex-col flex py-24">
+        <div className="inner border-x border-dashed min-h-lvh justify-center flex-col flex py-24">
           <div className="max-w-xl text-center mx-auto flex flex-col items-center gap-4">
             <div className="py-1 text-sm pl-2 pr-4 rounded-lg border flex items-center gap-1">
               <SolarStarAngleLineDuotone />
@@ -52,7 +52,7 @@ function App() {
           </div>
 
           <div className="px-8 grid grid-cols-3 gap-4 mt-8">
-            <div className="rotate-2 border p-1 rounded-2xl border-border/50">
+            <div className="rotate-2 border border-dashed p-1 rounded-2xl">
               <div className="border p-6 rounded-xl bg-surface shadow-xl shadow-black/6">
                 <div className="size-10 border flex justify-center items-center rounded-lg">
                   <SolarDocumentLineDuotone />
@@ -65,7 +65,7 @@ function App() {
               </div>
             </div>
 
-            <div className="-rotate-4 border p-1 rounded-2xl border-border/50">
+            <div className="-rotate-4 border border-dashed p-1 rounded-2xl">
               <div className="border p-6 rounded-xl bg-surface shadow-xl shadow-black/6">
                 <div className="size-10 border flex justify-center items-center rounded-lg">
                   <SolarStarsLineLineDuotone />
@@ -78,7 +78,7 @@ function App() {
               </div>
             </div>
 
-            <div className="rotate-6 border p-1 rounded-2xl border-border/50">
+            <div className="rotate-6 border border-dashed p-1 rounded-2xl">
               <div className="border p-6 rounded-xl bg-surface shadow-xl shadow-black/6">
                 <div className="size-10 border flex justify-center items-center rounded-lg">
                   <SolarUsersGroupTwoRoundedLineDuotone />
