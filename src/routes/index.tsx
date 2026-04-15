@@ -1,6 +1,6 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import SolarStarAngleLineDuotone from "~icons/solar/star-angle-line-duotone";
-import { Button } from "@heroui/react";
+import { Button, buttonVariants } from "@heroui/react";
 import SolarArrowRightLineDuotone from "~icons/solar/arrow-right-line-duotone";
 import SolarDocumentLineDuotone from "~icons/solar/document-line-duotone";
 import SolarStarsLineLineDuotone from "~icons/solar/stars-line-line-duotone";
@@ -11,6 +11,25 @@ export const Route = createFileRoute("/")({ component: App });
 function App() {
   return (
     <>
+      <header className="border-b bg-background">
+        <div className="inner border-x px-8 py-3 flex items-center justify-between">
+          <Link
+            to="/"
+            className="flex items-center gap-1 text-lg font-semibold"
+          >
+            <img src="/archon.svg" className="size-6" alt="" />
+            Archon
+          </Link>
+          <nav className="flex gap-4 items-center">
+            <Link to="/" className="text-sm hover:underline decoration-wavy">
+              Github
+            </Link>
+            <Link className={buttonVariants({ size: "sm" })} to="/">
+              Sign In
+            </Link>
+          </nav>
+        </div>
+      </header>
       <main>
         <div className="inner border-x min-h-lvh justify-center flex-col flex py-24">
           <div className="max-w-xl text-center mx-auto flex flex-col items-center gap-4">
@@ -34,7 +53,7 @@ function App() {
 
           <div className="px-8 grid grid-cols-3 gap-4 mt-8">
             <div className="rotate-2 border p-1 rounded-2xl border-border/50">
-              <div className="border p-6 rounded-xl bg-white shadow-xl shadow-black/6">
+              <div className="border p-6 rounded-xl bg-surface shadow-xl shadow-black/6">
                 <div className="size-10 border flex justify-center items-center rounded-lg">
                   <SolarDocumentLineDuotone />
                 </div>
@@ -47,7 +66,7 @@ function App() {
             </div>
 
             <div className="-rotate-4 border p-1 rounded-2xl border-border/50">
-              <div className="border p-6 rounded-xl bg-white shadow-xl shadow-black/6">
+              <div className="border p-6 rounded-xl bg-surface shadow-xl shadow-black/6">
                 <div className="size-10 border flex justify-center items-center rounded-lg">
                   <SolarStarsLineLineDuotone />
                 </div>
@@ -60,7 +79,7 @@ function App() {
             </div>
 
             <div className="rotate-6 border p-1 rounded-2xl border-border/50">
-              <div className="border p-6 rounded-xl bg-white shadow-xl shadow-black/6">
+              <div className="border p-6 rounded-xl bg-surface shadow-xl shadow-black/6">
                 <div className="size-10 border flex justify-center items-center rounded-lg">
                   <SolarUsersGroupTwoRoundedLineDuotone />
                 </div>
