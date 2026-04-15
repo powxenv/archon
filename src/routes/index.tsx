@@ -11,8 +11,11 @@ export const Route = createFileRoute("/")({ component: App });
 function App() {
   return (
     <>
-      <header className="border-b bg-background/60 inset-x-0 fixed top-0 backdrop-blur-2xl">
-        <div className="inner border-x px-8 py-3 flex items-center justify-between">
+      <header className="border-b bg-background/60 inset-x-0 fixed top-0 backdrop-blur-2xl z-10">
+        <div className="inner border-x px-8 py-3 flex items-center justify-between relative">
+          <div className="size-2 bg-background border absolute bottom-0 left-0 -translate-x-1/2 translate-y-1/2"></div>
+          <div className="size-2 bg-background border absolute right-0 bottom-0 translate-x-1/2 translate-y-1/2"></div>
+
           <Link
             to="/"
             className="flex items-center gap-1 text-lg font-semibold"
@@ -31,7 +34,8 @@ function App() {
         </div>
       </header>
       <main>
-        <div className="inner border-x border-dashed min-h-lvh justify-center flex-col flex py-24">
+        <div className="inner border-x border-dashed min-h-lvh justify-center flex-col flex py-24 relative">
+          <div className="size-1 bg-background border absolute top-0 left-0"></div>
           <div className="max-w-xl text-center mx-auto flex flex-col items-center gap-4">
             <div className="py-1 text-sm pl-2 pr-4 rounded-lg border flex items-center gap-1">
               <SolarStarAngleLineDuotone />
