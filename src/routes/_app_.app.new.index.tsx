@@ -3,12 +3,17 @@ import { Button, InputGroup, TextField } from "@heroui/react";
 import { createFileRoute } from "@tanstack/react-router";
 import SolarTrashBinMinimalistic2Linear from "~icons/solar/trash-bin-minimalistic-2-linear";
 import SolarAddCircleLinear from "~icons/solar/add-circle-linear";
+import NewForm from "#/components/new-form";
 
 export const Route = createFileRoute("/_app_/app/new/")({
   component: RouteComponent,
 });
 
+type Step = "name" | "repos";
+
 function RouteComponent() {
+  const [step, setStep] = useState<Step>("name");
+  const [name, setName] = useState("");
   const [repoUrls, setRepoUrls] = useState<string[]>([""]);
 
   const updateUrl = (index: number, value: string) => {
@@ -23,10 +28,39 @@ function RouteComponent() {
     setRepoUrls((prev) => prev.filter((_, i) => i !== index));
   };
 
+  if (step === "name") {
+    return (
+      <NewForm
+        title="Name Your Documentation"
+        description="Pick a clear name so you can easily find it later"
+      >
+        <div className="mt-4 flex flex-col gap-2">
+          <TextField name="doc-name" variant="secondary">
+            <InputGroup variant="secondary">
+              <InputGroup.Input
+                aria-label="Documentation name"
+                placeholder="e.g. Frontend API Docs"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+              />
+            </InputGroup>
+          </TextField>
+          <div className="flex justify-end">
+            <Button onPress={() => setStep("repos")} isDisabled={!name.trim()}>
+              Next
+            </Button>
+          </div>
+        </div>
+      </NewForm>
+    );
+  }
+
   return (
-    <>
-      <h3 className="text-lg mb-1 mt-4">Add New Documentation</h3>
-      <p>Masukkan link repository yang ingin kamu buat dokumentasi</p>
+    <NewForm
+      title="Add Repositories"
+      description="Link the Git repos you want to generate documentation from"
+      onBack={() => setStep("name")}
+    >
       <div className="mt-4 flex flex-col gap-2">
         {repoUrls.map((url, index) =>
           repoUrls.length === 1 ? (
@@ -34,7 +68,7 @@ function RouteComponent() {
               <InputGroup variant="secondary">
                 <InputGroup.Input
                   aria-label="Repo URL"
-                  placeholder="Enter repo url"
+                  placeholder="https://github.com/org/repo"
                   value={url}
                   onChange={(e) => updateUrl(index, e.target.value)}
                 />
@@ -45,7 +79,7 @@ function RouteComponent() {
               <InputGroup variant="secondary">
                 <InputGroup.Input
                   aria-label={`Repo URL ${index + 1}`}
-                  placeholder="Enter repo url"
+                  placeholder="https://github.com/org/repo"
                   value={url}
                   onChange={(e) => updateUrl(index, e.target.value)}
                 />
@@ -69,9 +103,9 @@ function RouteComponent() {
             <SolarAddCircleLinear className="size-4" />
             Add More
           </Button>
-          <Button type="submit">Next</Button>
+          <Button type="submit">Create Documentation</Button>
         </div>
       </div>
-    </>
+    </NewForm>
   );
 }
