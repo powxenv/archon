@@ -1,4 +1,5 @@
-import { buttonVariants } from "@heroui/react";
+import { initials } from "#/lib/utils";
+import { Avatar, buttonVariants, cn } from "@heroui/react";
 import { Link, useRouteContext } from "@tanstack/react-router";
 
 const Header = () => {
@@ -19,7 +20,16 @@ const Header = () => {
             Github
           </Link>
           {session ? (
-            <>logged in</>
+            <Link
+              to="/app"
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "pl-1")}
+            >
+              <Avatar className="size-6 border">
+                <Avatar.Image alt={session.user.name} src={session.user.image || ""} />
+                <Avatar.Fallback>{initials(session.user.name)}</Avatar.Fallback>
+              </Avatar>
+              Open App
+            </Link>
           ) : (
             <Link to="/auth" className={buttonVariants({ variant: "outline", size: "sm" })}>
               Sign In
