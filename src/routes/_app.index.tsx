@@ -6,7 +6,7 @@ import SolarDocumentLineDuotone from "~icons/solar/document-line-duotone";
 import SolarStarsLineLineDuotone from "~icons/solar/stars-line-line-duotone";
 import SolarUsersGroupTwoRoundedLineDuotone from "~icons/solar/users-group-two-rounded-line-duotone";
 
-export const Route = createFileRoute("/")({ component: App });
+export const Route = createFileRoute("/_app/")({ component: App });
 
 function App() {
   return (
@@ -23,9 +23,9 @@ function App() {
               Turn any codebase into clear, structured documentation
             </h1>
             <p className="max-w-md text-lg">
-              Archon analyzes your repositories and microservices to understand
-              how everything fits together, then generates technical docs,
-              onboarding guides, and user documentation all in one place.
+              Archon analyzes your repositories and microservices to understand how everything fits
+              together, then generates technical docs, onboarding guides, and user documentation all
+              in one place.
             </p>
 
             <Button>
@@ -41,8 +41,8 @@ function App() {
                 </div>
                 <h3 className="text-lg my-1">Complete technical docs</h3>
                 <p>
-                  Generates structured documentation covering your architecture,
-                  APIs, and service interactions without manual effort.
+                  Generates structured documentation covering your architecture, APIs, and service
+                  interactions without manual effort.
                 </p>
               </div>
             </div>
@@ -54,8 +54,8 @@ function App() {
                 </div>
                 <h3 className="text-lg my-1">Understands your architecture</h3>
                 <p>
-                  Traces data flows and dependencies across your entire system,
-                  even across microservice boundaries.
+                  Traces data flows and dependencies across your entire system, even across
+                  microservice boundaries.
                 </p>
               </div>
             </div>
@@ -67,8 +67,8 @@ function App() {
                 </div>
                 <h3 className="text-lg my-1">Onboarding and user guides</h3>
                 <p>
-                  Produces guides that help new team members get up to speed
-                  quickly, from setup instructions to system overviews.
+                  Produces guides that help new team members get up to speed quickly, from setup
+                  instructions to system overviews.
                 </p>
               </div>
             </div>
