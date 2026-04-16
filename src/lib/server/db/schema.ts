@@ -17,8 +17,8 @@ export * from "./auth";
 
 export const pageTypeEnum = pgEnum("page_type", ["page", "group"]);
 
-export const projects = pgTable(
-  "project",
+export const documentations = pgTable(
+  "documentation",
   {
     id: text("id")
       .primaryKey()
@@ -47,9 +47,9 @@ export const repositories = pgTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => createId()),
-    projectId: text("project_id")
+    documentationId: text("documentation_id")
       .notNull()
-      .references(() => projects.id, { onDelete: "cascade" }),
+      .references(() => documentations.id, { onDelete: "cascade" }),
     url: varchar("url", { length: 2048 }).notNull(),
     branch: varchar("branch", { length: 100 }).default("main"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -57,7 +57,7 @@ export const repositories = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [index().on(table.projectId)],
+  (table) => [index().on(table.documentationId)],
 );
 
 export const documentationTypes = pgTable("documentation_type", {
@@ -80,9 +80,9 @@ export const documentationPages = pgTable(
     id: text("id")
       .primaryKey()
       .$defaultFn(() => createId()),
-    projectId: text("project_id")
+    documentationId: text("documentation_id")
       .notNull()
-      .references(() => projects.id, { onDelete: "cascade" }),
+      .references(() => documentations.id, { onDelete: "cascade" }),
     type: pageTypeEnum("type").notNull().default("page"),
     parentId: text("parent_id").references((): AnyPgColumn => documentationPages.id, {
       onDelete: "set null",
@@ -95,16 +95,16 @@ export const documentationPages = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [index().on(table.projectId), index().on(table.parentId)],
+  (table) => [index().on(table.documentationId), index().on(table.parentId)],
 );
 
-export const projectsRelations = relations(projects, ({ one, many }) => ({
+export const documentationsRelations = relations(documentations, ({ one, many }) => ({
   user: one(user, {
-    fields: [projects.userId],
+    fields: [documentations.userId],
     references: [user.id],
   }),
   documentationType: one(documentationTypes, {
-    fields: [projects.documentationTypeId],
+    fields: [documentations.documentationTypeId],
     references: [documentationTypes.id],
   }),
   repositories: many(repositories),
@@ -112,21 +112,21 @@ export const projectsRelations = relations(projects, ({ one, many }) => ({
 }));
 
 export const repositoriesRelations = relations(repositories, ({ one, many }) => ({
-  project: one(projects, {
-    fields: [repositories.projectId],
-    references: [projects.id],
+  documentations: one(documentations, {
+    fields: [repositories.documentationId],
+    references: [documentations.id],
   }),
   documentationPages: many(documentationPages),
 }));
 
 export const documentationTypesRelations = relations(documentationTypes, ({ many }) => ({
-  projects: many(projects),
+  documentations: many(documentations),
 }));
 
 export const documentationPagesRelations = relations(documentationPages, ({ one, many }) => ({
-  project: one(projects, {
-    fields: [documentationPages.projectId],
-    references: [projects.id],
+  documentations: one(documentations, {
+    fields: [documentationPages.documentationId],
+    references: [documentations.id],
   }),
   parent: one(documentationPages, {
     fields: [documentationPages.parentId],
