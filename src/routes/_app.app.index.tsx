@@ -122,7 +122,9 @@ function RouteComponent() {
                       </div>
                       <div>
                         <h3 className="text-lg">Add your repositories</h3>
-                        <p className="text-sm text-muted">Link the Git repos you want to document</p>
+                        <p className="text-sm text-muted">
+                          Link the Git repos you want to document
+                        </p>
                       </div>
                     </div>
                   </div>

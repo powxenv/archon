@@ -26,10 +26,9 @@ export const projects = pgTable(
     userId: text("user_id")
       .notNull()
       .references(() => user.id, { onDelete: "cascade" }),
-    documentationTypeId: text("documentation_type_id").references(
-      () => documentationTypes.id,
-      { onDelete: "restrict" }
-    ),
+    documentationTypeId: text("documentation_type_id").references(() => documentationTypes.id, {
+      onDelete: "restrict",
+    }),
     isGenerated: boolean("is_generated").default(false).notNull(),
     name: varchar("name", { length: 255 }).notNull(),
     slug: varchar("slug", { length: 255 }).notNull().unique(),
@@ -39,10 +38,7 @@ export const projects = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [
-    index().on(table.slug),
-    index().on(table.userId),
-  ]
+  (table) => [index().on(table.slug), index().on(table.userId)],
 );
 
 export const repositories = pgTable(
@@ -61,25 +57,22 @@ export const repositories = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [index().on(table.projectId)]
+  (table) => [index().on(table.projectId)],
 );
 
-export const documentationTypes = pgTable(
-  "documentation_type",
-  {
-    id: text("id")
-      .primaryKey()
-      .$defaultFn(() => createId()),
-    name: varchar("name", { length: 255 }).notNull(),
-    slug: varchar("slug", { length: 500 }).notNull().unique(),
-    description: text("description"),
-    systemPrompt: text("system_prompt").notNull(),
-    createdAt: timestamp("created_at").defaultNow().notNull(),
-    updatedAt: timestamp("updated_at")
-      .$onUpdate(() => new Date())
-      .notNull(),
-  }
-);
+export const documentationTypes = pgTable("documentation_type", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => createId()),
+  name: varchar("name", { length: 255 }).notNull(),
+  slug: varchar("slug", { length: 500 }).notNull().unique(),
+  description: text("description"),
+  systemPrompt: text("system_prompt").notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at")
+    .$onUpdate(() => new Date())
+    .notNull(),
+});
 
 export const documentationPages = pgTable(
   "documentation_page",
@@ -91,10 +84,9 @@ export const documentationPages = pgTable(
       .notNull()
       .references(() => projects.id, { onDelete: "cascade" }),
     type: pageTypeEnum("type").notNull().default("page"),
-    parentId: text("parent_id").references(
-      (): AnyPgColumn => documentationPages.id,
-      { onDelete: "set null" }
-    ),
+    parentId: text("parent_id").references((): AnyPgColumn => documentationPages.id, {
+      onDelete: "set null",
+    }),
     title: varchar("title", { length: 500 }).notNull(),
     content: text("content"),
     order: integer("order").default(0),
@@ -103,10 +95,7 @@ export const documentationPages = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [
-    index().on(table.projectId),
-    index().on(table.parentId),
-  ]
+  (table) => [index().on(table.projectId), index().on(table.parentId)],
 );
 
 export const projectsRelations = relations(projects, ({ one, many }) => ({
@@ -130,24 +119,18 @@ export const repositoriesRelations = relations(repositories, ({ one, many }) => 
   documentationPages: many(documentationPages),
 }));
 
-export const documentationTypesRelations = relations(
-  documentationTypes,
-  ({ many }) => ({
-    projects: many(projects),
-  })
-);
+export const documentationTypesRelations = relations(documentationTypes, ({ many }) => ({
+  projects: many(projects),
+}));
 
-export const documentationPagesRelations = relations(
-  documentationPages,
-  ({ one, many }) => ({
-    project: one(projects, {
-      fields: [documentationPages.projectId],
-      references: [projects.id],
-    }),
-    parent: one(documentationPages, {
-      fields: [documentationPages.parentId],
-      references: [documentationPages.id],
-    }),
-    children: many(documentationPages),
-  })
-);
+export const documentationPagesRelations = relations(documentationPages, ({ one, many }) => ({
+  project: one(projects, {
+    fields: [documentationPages.projectId],
+    references: [projects.id],
+  }),
+  parent: one(documentationPages, {
+    fields: [documentationPages.parentId],
+    references: [documentationPages.id],
+  }),
+  children: many(documentationPages),
+}));

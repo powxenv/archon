@@ -12,7 +12,7 @@ const ALLOWED_EMAILS = ["bykaelren@gmail.com"];
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: "pg",
-    schema
+    schema,
   }),
   emailAndPassword: {
     enabled: false,
@@ -34,11 +34,12 @@ export const auth = betterAuth({
         if (!isDomainAllowed && !isEmailAllowed) {
           await ctx.context.internalAdapter.deleteUser(newSession.user.id);
           const errorURL = ctx.context.options.onAPIError?.errorURL;
-          throw ctx.redirect(`${errorURL}?error=email_not_allowed&message=Email+address+not+allowed`);
+          throw ctx.redirect(
+            `${errorURL}?error=email_not_allowed&message=Email+address+not+allowed`,
+          );
         }
       }
     }),
-
   },
   socialProviders: {
     github: {
