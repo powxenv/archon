@@ -1,5 +1,5 @@
-import { Button } from "@heroui/react";
-import { createFileRoute } from "@tanstack/react-router";
+import { buttonVariants } from "@heroui/react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import SolarStarFallLinear from "~icons/solar/star-fall-linear";
 import SolarDocumentLineDuotone from "~icons/solar/document-line-duotone";
 import SolarCode2Linear from "~icons/solar/code-2-linear";
@@ -39,10 +39,10 @@ function RouteComponent() {
                 </p>
               </div>
               <div>
-                <Button>
+                <Link to="/app/new" className={buttonVariants()}>
                   <SolarStarFallLinear />
                   New Documentation
-                </Button>
+                </Link>
               </div>
             </div>
             <div className="grid grid-cols-3 gap-8 mt-16">
@@ -69,10 +69,12 @@ function RouteComponent() {
               <p className="text-muted-foreground mt-4 text-xl">
                 Turn your codebase into clear, complete documentation in three simple steps
               </p>
-              <Button className="mt-6">
-                <SolarStarFallLinear />
-                New Documentation
-              </Button>
+              <div className="mt-4">
+                <Link to="/app/new" className={buttonVariants()}>
+                  <SolarStarFallLinear />
+                  New Documentation
+                </Link>
+              </div>
             </div>
             <div className="mt-8 flex flex-col">
               <div className="flex gap-2">

@@ -13,9 +13,11 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
+import { Route as AppAppRouteImport } from './routes/_app_.app'
 import { Route as AuthErrorIndexRouteImport } from './routes/auth.error.index'
 import { Route as AppAppIndexRouteImport } from './routes/_app.app.index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as AppAppNewIndexRouteImport } from './routes/_app_.app.new.index'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -36,6 +38,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppAppRoute = AppAppRouteImport.update({
+  id: '/_app_/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthErrorIndexRoute = AuthErrorIndexRouteImport.update({
   id: '/error/',
   path: '/error/',
@@ -51,51 +58,72 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AppAppNewIndexRoute = AppAppNewIndexRouteImport.update({
+  id: '/new/',
+  path: '/new/',
+  getParentRoute: () => AppAppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
   '/auth': typeof AuthRouteWithChildren
+  '/app': typeof AppAppRouteWithChildren
   '/auth/': typeof AuthIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/app/': typeof AppAppIndexRoute
   '/auth/error/': typeof AuthErrorIndexRoute
+  '/app/new/': typeof AppAppNewIndexRoute
 }
 export interface FileRoutesByTo {
+  '/app': typeof AppAppIndexRoute
   '/': typeof AppIndexRoute
   '/auth': typeof AuthIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
-  '/app': typeof AppAppIndexRoute
   '/auth/error': typeof AuthErrorIndexRoute
+  '/app/new': typeof AppAppNewIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/auth': typeof AuthRouteWithChildren
+  '/_app_/app': typeof AppAppRouteWithChildren
   '/_app/': typeof AppIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/app/': typeof AppAppIndexRoute
   '/auth/error/': typeof AuthErrorIndexRoute
+  '/_app_/app/new/': typeof AppAppNewIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/auth/' | '/api/auth/$' | '/app/' | '/auth/error/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/app'
+    | '/auth/'
+    | '/api/auth/$'
+    | '/app/'
+    | '/auth/error/'
+    | '/app/new/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/api/auth/$' | '/app' | '/auth/error'
+  to: '/app' | '/' | '/auth' | '/api/auth/$' | '/auth/error' | '/app/new'
   id:
     | '__root__'
     | '/_app'
     | '/auth'
+    | '/_app_/app'
     | '/_app/'
     | '/auth/'
     | '/api/auth/$'
     | '/_app/app/'
     | '/auth/error/'
+    | '/_app_/app/new/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
+  AppAppRoute: typeof AppAppRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -129,6 +157,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app_/app': {
+      id: '/_app_/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppAppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/error/': {
       id: '/auth/error/'
       path: '/error'
@@ -149,6 +184,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/api/auth/$'
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_app_/app/new/': {
+      id: '/_app_/app/new/'
+      path: '/new'
+      fullPath: '/app/new/'
+      preLoaderRoute: typeof AppAppNewIndexRouteImport
+      parentRoute: typeof AppAppRoute
     }
   }
 }
@@ -177,9 +219,21 @@ const AuthRouteChildren: AuthRouteChildren = {
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
+interface AppAppRouteChildren {
+  AppAppNewIndexRoute: typeof AppAppNewIndexRoute
+}
+
+const AppAppRouteChildren: AppAppRouteChildren = {
+  AppAppNewIndexRoute: AppAppNewIndexRoute,
+}
+
+const AppAppRouteWithChildren =
+  AppAppRoute._addFileChildren(AppAppRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
+  AppAppRoute: AppAppRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
