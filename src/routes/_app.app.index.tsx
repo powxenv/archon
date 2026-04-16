@@ -5,10 +5,8 @@ import SolarDocumentLineDuotone from "~icons/solar/document-line-duotone";
 import SolarCode2Linear from "~icons/solar/code-2-linear";
 import SolarRocket2Linear from "~icons/solar/rocket-2-linear";
 import { rot } from "#/lib/utils";
-import { db } from "#/lib/server/db";
-import { documentationTypes, projects as projectTable } from "#/lib/server/db/schema";
-import { eq } from "drizzle-orm";
 import type { ReactElement } from "react";
+import { getProjects } from "#/lib/func/projects.func.ts";
 
 const iconMap: Record<string, ReactElement> = {
   onboarding: <SolarRocket2Linear />,
@@ -18,10 +16,7 @@ const iconMap: Record<string, ReactElement> = {
 
 export const Route = createFileRoute("/_app/app/")({
   loader: async () => {
-    const projects = await db
-      .select()
-      .from(projectTable)
-      .innerJoin(documentationTypes, eq(projectTable.id, documentationTypes.id));
+    const projects = await getProjects();
 
     return { projects };
   },
