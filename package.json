@@ -18,6 +18,7 @@
   "dependencies": {
     "@heroui/react": "^3.0.2",
     "@heroui/styles": "^3.0.2",
+    "@modelcontextprotocol/sdk": "^1.29.0",
     "@neondatabase/serverless": "^1.0.2",
     "@paralleldrive/cuid2": "^3.3.0",
     "@t3-oss/env-core": "^0.13.11",
