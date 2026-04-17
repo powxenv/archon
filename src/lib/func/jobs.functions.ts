@@ -26,7 +26,7 @@ export const createJob = createServerFn({ method: "POST" })
         }),
       ),
       documentationType: z.string(),
-      systemPrompt: z.string().optional(),
+      systemPrompt: z.string(),
     }),
   )
   .handler(async ({ data }) => {

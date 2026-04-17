@@ -18,6 +18,7 @@ import { Route as AuthErrorIndexRouteImport } from './routes/auth.error.index'
 import { Route as AppAppIndexRouteImport } from './routes/_app.app.index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppAppNewIndexRouteImport } from './routes/_app_.app.new.index'
+import { Route as AppAppNewDocumentationIdStatusRouteImport } from './routes/_app_.app.new.$documentationId.status'
 
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
@@ -63,6 +64,12 @@ const AppAppNewIndexRoute = AppAppNewIndexRouteImport.update({
   path: '/new/',
   getParentRoute: () => AppAppRoute,
 } as any)
+const AppAppNewDocumentationIdStatusRoute =
+  AppAppNewDocumentationIdStatusRouteImport.update({
+    id: '/new/$documentationId/status',
+    path: '/new/$documentationId/status',
+    getParentRoute: () => AppAppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AppIndexRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AppAppIndexRoute
   '/auth/error/': typeof AuthErrorIndexRoute
   '/app/new/': typeof AppAppNewIndexRoute
+  '/app/new/$documentationId/status': typeof AppAppNewDocumentationIdStatusRoute
 }
 export interface FileRoutesByTo {
   '/app': typeof AppAppIndexRoute
@@ -81,6 +89,7 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/auth/error': typeof AuthErrorIndexRoute
   '/app/new': typeof AppAppNewIndexRoute
+  '/app/new/$documentationId/status': typeof AppAppNewDocumentationIdStatusRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,6 +102,7 @@ export interface FileRoutesById {
   '/_app/app/': typeof AppAppIndexRoute
   '/auth/error/': typeof AuthErrorIndexRoute
   '/_app_/app/new/': typeof AppAppNewIndexRoute
+  '/_app_/app/new/$documentationId/status': typeof AppAppNewDocumentationIdStatusRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -105,8 +115,16 @@ export interface FileRouteTypes {
     | '/app/'
     | '/auth/error/'
     | '/app/new/'
+    | '/app/new/$documentationId/status'
   fileRoutesByTo: FileRoutesByTo
-  to: '/app' | '/' | '/auth' | '/api/auth/$' | '/auth/error' | '/app/new'
+  to:
+    | '/app'
+    | '/'
+    | '/auth'
+    | '/api/auth/$'
+    | '/auth/error'
+    | '/app/new'
+    | '/app/new/$documentationId/status'
   id:
     | '__root__'
     | '/_app'
@@ -118,6 +136,7 @@ export interface FileRouteTypes {
     | '/_app/app/'
     | '/auth/error/'
     | '/_app_/app/new/'
+    | '/_app_/app/new/$documentationId/status'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -192,6 +211,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAppNewIndexRouteImport
       parentRoute: typeof AppAppRoute
     }
+    '/_app_/app/new/$documentationId/status': {
+      id: '/_app_/app/new/$documentationId/status'
+      path: '/new/$documentationId/status'
+      fullPath: '/app/new/$documentationId/status'
+      preLoaderRoute: typeof AppAppNewDocumentationIdStatusRouteImport
+      parentRoute: typeof AppAppRoute
+    }
   }
 }
 
@@ -221,10 +247,12 @@ const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
 
 interface AppAppRouteChildren {
   AppAppNewIndexRoute: typeof AppAppNewIndexRoute
+  AppAppNewDocumentationIdStatusRoute: typeof AppAppNewDocumentationIdStatusRoute
 }
 
 const AppAppRouteChildren: AppAppRouteChildren = {
   AppAppNewIndexRoute: AppAppNewIndexRoute,
+  AppAppNewDocumentationIdStatusRoute: AppAppNewDocumentationIdStatusRoute,
 }
 
 const AppAppRouteWithChildren =

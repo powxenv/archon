@@ -163,7 +163,7 @@ export const documentationJobs = pgTable(
       .$type<{
         repositories: Array<{ url: string; branch: string }>;
         documentationType: string;
-        systemPrompt?: string;
+        systemPrompt: string;
       }>()
       .notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

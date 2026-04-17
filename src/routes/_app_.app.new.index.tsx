@@ -15,14 +15,14 @@ import {
   useFilter,
 } from "@heroui/react";
 import type { ReactElement } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import SolarTrashBinMinimalistic2Linear from "~icons/solar/trash-bin-minimalistic-2-linear";
 import SolarAddCircleLinear from "~icons/solar/add-circle-linear";
 import SolarCode2Linear from "~icons/solar/code-2-linear";
 import SolarDocumentLineDuotone from "~icons/solar/document-line-duotone";
 import SolarRocket2Linear from "~icons/solar/rocket-2-linear";
 import NewForm from "#/components/new-form";
-import { getDocumentationTypes, getRepoBranches } from "#/lib/func/docs.functions.ts";
+import { getDocumentationTypes, getRepoBranches, createDocumentation } from "#/lib/func/docs.functions.ts";
 
 const iconMap: Record<string, ReactElement> = {
   onboarding: <SolarRocket2Linear className="size-5" />,
@@ -42,6 +42,7 @@ type Step = "name" | "type" | "repos" | "branches";
 
 function RouteComponent() {
   const { documentationTypes } = Route.useLoaderData();
+  const navigate = useNavigate();
   const [step, setStep] = useState<Step>("name");
   const [name, setName] = useState("");
   const [selectedType, setSelectedType] = useState<string>("");
@@ -50,6 +51,7 @@ function RouteComponent() {
   const [branches, setBranches] = useState<Record<number, string>>({});
   const [repoBranchOptions, setRepoBranchOptions] = useState<Record<number, string[]>>({});
   const [branchesLoading, setBranchesLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { contains } = useFilter({ sensitivity: "base" });
 
   const validateRepoUrl = (url: string): string => {
@@ -96,6 +98,33 @@ function RouteComponent() {
 
   const allReposFilled = repoUrls.every((url) => url.trim().length > 0);
   const hasUrlErrors = Object.values(urlErrors).some((error) => error.length > 0);
+
+  const handleSubmit = async () => {
+    setIsSubmitting(true);
+    try {
+      const repositories = repoUrls.map((url, i) => ({
+        url,
+        branch: branches[i] || "main",
+      }));
+
+      const result = await createDocumentation({
+        data: {
+          name,
+          documentationTypeId: selectedType,
+          repositories,
+        },
+      });
+
+      await navigate({
+        to: "/app/new/$documentationId/status",
+        params: { documentationId: result.documentation.id },
+      });
+    } catch (error) {
+      console.error("Failed to create documentation:", error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   const fetchBranchesAndContinue = async () => {
     setBranchesLoading(true);
@@ -275,8 +304,8 @@ function RouteComponent() {
           );
         })}
         <div className="flex justify-end">
-          <Button type="submit" isDisabled={!allBranchesSelected}>
-            Create Documentation
+          <Button onPress={handleSubmit} isDisabled={!allBranchesSelected || isSubmitting}>
+            {isSubmitting ? <Spinner size="sm" /> : "Create Documentation"}
           </Button>
         </div>
       </div>

@@ -30,7 +30,7 @@ function RouteComponent() {
     <main>
       <div className="inner border-x px-8">
         {documentations.length > 0 ? (
-          <div className="min-h-lvh py-14">
+          <div className="min-h-lvh py-20">
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl">Your Documentation</h1>
@@ -56,7 +56,11 @@ function RouteComponent() {
                       {iconMap[documentation.documentation_type.slug]}
                     </div>
                     <h3 className="text-lg my-1">{documentation.documentation.name}</h3>
-                    <p className="line-clamp-3">{documentation.documentation.description}</p>
+                    {documentation.documentation.isGenerated ? (
+                      <p className="line-clamp-3">{documentation.documentation.description}</p>
+                    ) : (
+                      <div className="border p-4 rounded-lg">Generating</div>
+                    )}
                   </div>
                 </div>
               ))}

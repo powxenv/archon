@@ -13,7 +13,7 @@ export const getDocumentations = createServerFn({ method: "GET" }).handler(async
     .select()
     .from(documentationTable)
     .where(eq(documentationTable.userId, session.user.id))
-    .innerJoin(documentationTypes, eq(documentationTable.id, documentationTypes.id));
+    .innerJoin(documentationTypes, eq(documentationTable.documentationTypeId, documentationTypes.id));
 
   return documentations;
 });
@@ -28,7 +28,6 @@ export const createDocumentation = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({
       name: z.string().min(1).max(255),
-      slug: z.string().min(1).max(255),
       description: z.string().optional(),
       documentationTypeId: z.string(),
       repositories: z.array(
@@ -39,18 +38,49 @@ export const createDocumentation = createServerFn({ method: "POST" })
           branch: z.string(),
         }),
       ),
-      systemPrompt: z.string().optional(),
     }),
   )
   .handler(async ({ data }) => {
     const session = await ensureSession();
+
+    const generateSlug = (name: string): string => {
+      return name
+        .toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, "")
+        .trim()
+        .replace(/\s+/g, "-")
+        .replace(/-+/g, "-");
+    };
+
+    const generateUniqueSlug = async (baseSlug: string): Promise<string> => {
+      let slug = baseSlug;
+      let suffix = 1;
+
+      while (true) {
+        const existing = await db
+          .select({ id: documentationTable.id })
+          .from(documentationTable)
+          .where(eq(documentationTable.slug, slug))
+          .limit(1);
+
+        if (existing.length === 0) {
+          return slug;
+        }
+
+        slug = `${baseSlug}-${suffix}`;
+        suffix++;
+      }
+    };
+
+    const baseSlug = generateSlug(data.name);
+    const uniqueSlug = await generateUniqueSlug(baseSlug);
 
     const [documentation] = await db
       .insert(documentationTable)
       .values({
         userId: session.user.id,
         name: data.name,
-        slug: data.slug,
+        slug: uniqueSlug,
         description: data.description,
         documentationTypeId: data.documentationTypeId,
         isGenerated: false,
@@ -69,11 +99,21 @@ export const createDocumentation = createServerFn({ method: "POST" })
       });
     }
 
+    const [docType] = await db
+      .select({ systemPrompt: documentationTypes.systemPrompt })
+      .from(documentationTypes)
+      .where(eq(documentationTypes.id, data.documentationTypeId))
+      .limit(1);
+
+    if (!docType) {
+      throw new Error("Documentation type not found");
+    }
+
     const job = await enqueueJob({
       documentationId: documentation.id,
       repositories: data.repositories,
       documentationType: data.documentationTypeId,
-      systemPrompt: data.systemPrompt,
+      systemPrompt: docType.systemPrompt,
     });
 
     return { documentation, job };

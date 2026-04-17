@@ -3,14 +3,14 @@ import {
   documentationJobs,
   type DocumentationJob,
 } from "../db/schema.server";
-import { eq, and, lt, desc, sql } from "drizzle-orm";
+import { eq, and, lt, desc, gt } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 
 export type JobInput = {
   documentationId: string;
   repositories: Array<{ url: string; branch: string }>;
   documentationType: string;
-  systemPrompt?: string;
+  systemPrompt: string;
 };
 
 export type JobStatus = DocumentationJob["status"];
@@ -55,7 +55,7 @@ export async function dequeueJob(): Promise<JobWithMetadata | null> {
     .where(
       and(
         eq(documentationJobs.status, "pending"),
-        sql`${documentationJobs.createdAt} > ${staleThreshold}`,
+        gt(documentationJobs.createdAt, staleThreshold),
       ),
     )
     .orderBy(documentationJobs.createdAt)
