@@ -7,6 +7,8 @@ import SolarAltArrowDownLinear from "~icons/solar/alt-arrow-down-linear";
 import { MarkdownContent } from "#/components/markdown-content";
 import { Fragment, useEffect, useRef } from "react";
 import mermaid from "mermaid";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.min.css";
 
 export const Route = createFileRoute("/docs/$slug/$pageSlug")({
   loader: async ({ params }) => {
@@ -50,6 +52,7 @@ function RouteComponent() {
 
     mermaid.initialize({ startOnLoad: false, theme: "default", suppressErrorRendering: true });
     void mermaid.run({ querySelector: ".mermaid" });
+    hljs.highlightAll();
   }, [page.id]);
 
   const rootPages = pages.filter((p) => p.type === "page" && !p.parentId);
