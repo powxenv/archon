@@ -15,7 +15,8 @@ export const auth = betterAuth({
     schema,
   }),
   emailAndPassword: {
-    enabled: false,
+    enabled: true,
+    autoSignIn: true,
   },
   onAPIError: {
     errorURL: "/auth/error",
