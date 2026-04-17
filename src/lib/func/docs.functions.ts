@@ -8,10 +8,11 @@ import {
   documentationPages,
   documentationJobs,
 } from "#/lib/server/db/schema.server";
-import { eq, and, asc } from "drizzle-orm";
+import { eq, and, asc, desc } from "drizzle-orm";
 import { z } from "zod";
 import { enqueueJob } from "../server/jobs/index.server";
 import { renderMarkdown } from "../utils/markdown";
+import { generateSlug } from "../utils";
 
 export const getDocumentations = createServerFn({ method: "GET" }).handler(async () => {
   const session = await ensureSession();
@@ -25,7 +26,28 @@ export const getDocumentations = createServerFn({ method: "GET" }).handler(async
       eq(documentationTable.documentationTypeId, documentationTypes.id),
     );
 
-  return documentations;
+  const ungeneratedIds = documentations
+    .filter((d) => !d.documentation.isGenerated)
+    .map((d) => d.documentation.id);
+
+  const jobStatuses: Record<string, string> = {};
+
+  if (ungeneratedIds.length > 0) {
+    for (const docId of ungeneratedIds) {
+      const [job] = await db
+        .select({ status: documentationJobs.status })
+        .from(documentationJobs)
+        .where(eq(documentationJobs.documentationId, docId))
+        .orderBy(desc(documentationJobs.createdAt))
+        .limit(1);
+      if (job) jobStatuses[docId] = job.status;
+    }
+  }
+
+  return documentations.map((d) => ({
+    ...d,
+    jobStatus: (jobStatuses[d.documentation.id] ?? null) as string | null,
+  }));
 });
 
 export const getDocumentationTypes = createServerFn({ method: "GET" }).handler(async () => {
@@ -55,15 +77,6 @@ export const createDocumentation = createServerFn({ method: "POST" })
   )
   .handler(async ({ data }) => {
     const session = await ensureSession();
-
-    const generateSlug = (name: string): string => {
-      return name
-        .toLowerCase()
-        .replace(/[^a-z0-9\s-]/g, "")
-        .trim()
-        .replace(/\s+/g, "-")
-        .replace(/-+/g, "-");
-    };
 
     const generateUniqueSlug = async (baseSlug: string): Promise<string> => {
       let slug = baseSlug;
@@ -195,6 +208,7 @@ export const getDocumentationBySlug = createServerFn({ method: "GET" })
         type: documentationPages.type,
         parentId: documentationPages.parentId,
         title: documentationPages.title,
+        slug: documentationPages.slug,
         content: documentationPages.content,
         order: documentationPages.order,
       })
@@ -223,7 +237,7 @@ export const getDocumentationPageBySlug = createServerFn({ method: "GET" })
   .inputValidator(
     z.object({
       documentationSlug: z.string(),
-      pageId: z.string(),
+      pageSlug: z.string(),
     }),
   )
   .handler(async ({ data }) => {
@@ -258,6 +272,7 @@ export const getDocumentationPageBySlug = createServerFn({ method: "GET" })
         type: documentationPages.type,
         parentId: documentationPages.parentId,
         title: documentationPages.title,
+        slug: documentationPages.slug,
         content: documentationPages.content,
         order: documentationPages.order,
       })
@@ -265,7 +280,7 @@ export const getDocumentationPageBySlug = createServerFn({ method: "GET" })
       .where(
         and(
           eq(documentationPages.documentationId, documentation.id),
-          eq(documentationPages.id, data.pageId),
+          eq(documentationPages.slug, data.pageSlug),
         ),
       )
       .limit(1);
@@ -280,6 +295,7 @@ export const getDocumentationPageBySlug = createServerFn({ method: "GET" })
         type: documentationPages.type,
         parentId: documentationPages.parentId,
         title: documentationPages.title,
+        slug: documentationPages.slug,
         order: documentationPages.order,
       })
       .from(documentationPages)
@@ -360,6 +376,7 @@ export const getDocumentationForEdit = createServerFn({ method: "GET" })
         type: documentationPages.type,
         parentId: documentationPages.parentId,
         title: documentationPages.title,
+        slug: documentationPages.slug,
         content: documentationPages.content,
         order: documentationPages.order,
       })
@@ -469,4 +486,61 @@ export const updateDocumentation = createServerFn({ method: "POST" })
     }
 
     return { success: true };
+  });
+
+export const regenerateDocumentation = createServerFn({ method: "POST" })
+  .inputValidator(z.string())
+  .handler(async ({ data: documentationId }) => {
+    const session = await ensureSession();
+
+    const [documentation] = await db
+      .select({
+        id: documentationTable.id,
+        userId: documentationTable.userId,
+        documentationTypeId: documentationTable.documentationTypeId,
+      })
+      .from(documentationTable)
+      .where(eq(documentationTable.id, documentationId))
+      .limit(1);
+
+    if (!documentation || documentation.userId !== session.user.id) {
+      throw new Error("Documentation not found");
+    }
+
+    if (!documentation.documentationTypeId) {
+      throw new Error("Documentation has no type assigned");
+    }
+
+    const repos = await db
+      .select({ url: repositories.url, branch: repositories.branch })
+      .from(repositories)
+      .where(eq(repositories.documentationId, documentationId));
+
+    const [docType] = await db
+      .select({ systemPrompt: documentationTypes.systemPrompt })
+      .from(documentationTypes)
+      .where(eq(documentationTypes.id, documentation.documentationTypeId))
+      .limit(1);
+
+    if (!docType) {
+      throw new Error("Documentation type not found");
+    }
+
+    await db
+      .delete(documentationPages)
+      .where(eq(documentationPages.documentationId, documentationId));
+
+    await db
+      .update(documentationTable)
+      .set({ isGenerated: false, isDirty: false })
+      .where(eq(documentationTable.id, documentationId));
+
+    const job = await enqueueJob({
+      documentationId,
+      repositories: repos.map((r) => ({ url: r.url, branch: r.branch ?? "main" })),
+      documentationType: documentation.documentationTypeId,
+      systemPrompt: docType.systemPrompt,
+    });
+
+    return { job };
   });

@@ -1,4 +1,4 @@
-import { buttonVariants, cn } from "@heroui/react";
+import { buttonVariants, cn, Spinner } from "@heroui/react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import SolarStarFallLinear from "~icons/solar/star-fall-linear";
 import SolarDocumentLineDuotone from "~icons/solar/document-line-duotone";
@@ -7,6 +7,7 @@ import SolarRocket2Linear from "~icons/solar/rocket-2-linear";
 import SolarEyeLinear from "~icons/solar/eye-linear";
 import SolarLockKeyholeLinear from "~icons/solar/lock-keyhole-linear";
 import SolarGlobalLinear from "~icons/solar/global-linear";
+import SolarRestartLinear from "~icons/solar/restart-linear";
 import { rot } from "#/lib/utils";
 import type { ReactElement } from "react";
 import { getDocumentations } from "#/lib/func/docs.functions.ts";
@@ -51,7 +52,11 @@ function RouteComponent() {
             <div className="grid grid-cols-3 gap-8 mt-16">
               {documentations.map((documentation) => (
                 <Link
-                  to="/app/$documentationId"
+                  to={
+                    documentation.documentation.isGenerated
+                      ? "/app/$documentationId"
+                      : "/app/new/$documentationId/status"
+                  }
                   params={{ documentationId: documentation.documentation.id }}
                   style={{ transform: `rotate(${rot(documentation.documentation.id)}deg)` }}
                   className="border border-dashed p-1 rounded-2xl"
@@ -89,8 +94,30 @@ function RouteComponent() {
                     <h3 className="text-lg my-1">{documentation.documentation.name}</h3>
                     {documentation.documentation.isGenerated ? (
                       <p className="line-clamp-3">{documentation.documentation.description}</p>
+                    ) : documentation.jobStatus === "failed" ? (
+                      <div className="border border-danger/30 py-2 px-4 rounded-lg w-full flex gap-2">
+                        <SolarRestartLinear className="size-4 mt-1 text-danger" />
+                        <div className="flex flex-col">
+                          <span className="font-semibold -tracking-wider text-danger">Failed</span>
+                          <span className="text-sm">Click to retry</span>
+                        </div>
+                      </div>
+                    ) : documentation.jobStatus === "cancelled" ? (
+                      <div className="border border-warning/30 py-2 px-4 rounded-lg w-full flex gap-2">
+                        <SolarRestartLinear className="size-4 mt-1 text-warning" />
+                        <div className="flex flex-col">
+                          <span className="font-semibold -tracking-wider text-warning">Cancelled</span>
+                          <span className="text-sm">Click to retry</span>
+                        </div>
+                      </div>
                     ) : (
-                      <div className="border p-4 rounded-lg">Generating</div>
+                      <div className="border py-2 px-4 rounded-lg w-full flex gap-2">
+                        <Spinner className="size-4 mt-1" />
+                        <div className="flex flex-col">
+                          <span className="font-semibold -tracking-wider">Generating</span>
+                          <span className="text-sm">Please wait</span>
+                        </div>
+                      </div>
                     )}
                   </div>
                 </Link>

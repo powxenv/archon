@@ -9,6 +9,7 @@ import {
   type AnyPgColumn,
   boolean,
   jsonb,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
@@ -91,6 +92,7 @@ export const documentationPages = pgTable(
       onDelete: "set null",
     }),
     title: varchar("title", { length: 500 }).notNull(),
+    slug: varchar("slug", { length: 500 }).notNull(),
     content: text("content"),
     order: integer("order").default(0),
     createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -98,7 +100,11 @@ export const documentationPages = pgTable(
       .$onUpdate(() => new Date())
       .notNull(),
   },
-  (table) => [index().on(table.documentationId), index().on(table.parentId)],
+  (table) => [
+    index().on(table.documentationId),
+    index().on(table.parentId),
+    uniqueIndex("documentation_page_slug_unique").on(table.documentationId, table.slug),
+  ],
 );
 
 export const documentationsRelations = relations(documentations, ({ one, many }) => ({

@@ -6,13 +6,14 @@ import SolarChatRoundDotsLinear from "~icons/solar/chat-round-dots-linear";
 import SolarAltArrowDownLinear from "~icons/solar/alt-arrow-down-linear";
 import { MarkdownContent } from "#/components/markdown-content";
 import { Fragment, useEffect, useRef } from "react";
+import mermaid from "mermaid";
 
 export const Route = createFileRoute("/docs/$slug/$pageSlug")({
   loader: async ({ params }) => {
     const result = await getDocumentationPageBySlug({
       data: {
         documentationSlug: params.slug,
-        pageId: params.pageSlug,
+        pageSlug: params.pageSlug,
       },
     });
 
@@ -23,12 +24,7 @@ export const Route = createFileRoute("/docs/$slug/$pageSlug")({
     const { documentation, jobStatus } = result;
 
     if (!documentation.isGenerated) {
-      if (
-        documentation.isOwner &&
-        jobStatus &&
-        jobStatus !== "completed" &&
-        jobStatus !== "failed"
-      ) {
+      if (documentation.isOwner && jobStatus && jobStatus !== "completed") {
         throw redirect({
           to: "/app/new/$documentationId/status",
           params: { documentationId: documentation.id },
@@ -50,6 +46,7 @@ function RouteComponent() {
   useEffect(() => {
     if (contentRef.current) {
       contentRef.current.scrollTo({ top: 0, behavior: "smooth" });
+      mermaid.initialize({ startOnLoad: true });
     }
   }, [page.id]);
 
@@ -63,7 +60,7 @@ function RouteComponent() {
   const prevPage = currentIndex > 0 ? sortedPages[currentIndex - 1] : null;
   const nextPage = currentIndex < sortedPages.length - 1 ? sortedPages[currentIndex + 1] : null;
 
-  const pageUrl = `${window.location.origin}/docs/${slug}/${page.id}`;
+  const pageUrl = `${window.location.origin}/docs/${slug}/${page.slug}`;
 
   return (
     <div className="flex flex-col">
@@ -97,7 +94,7 @@ function RouteComponent() {
                   to="/docs/$slug/$pageSlug"
                   params={{
                     slug,
-                    pageSlug: rootPage.id,
+                    pageSlug: rootPage.slug,
                   }}
                   className={cn(
                     buttonVariants({ variant: page.id === rootPage.id ? "tertiary" : "ghost" }),
@@ -126,7 +123,7 @@ function RouteComponent() {
                       to="/docs/$slug/$pageSlug"
                       params={{
                         slug,
-                        pageSlug: groupPage.id,
+                        pageSlug: groupPage.slug,
                       }}
                       className={cn(
                         buttonVariants({
@@ -149,7 +146,7 @@ function RouteComponent() {
             {prevPage ? (
               <Link
                 to="/docs/$slug/$pageSlug"
-                params={{ slug, pageSlug: prevPage.id }}
+                params={{ slug, pageSlug: prevPage.slug }}
                 className={cn(buttonVariants({ variant: "outline" }))}
               >
                 ← {prevPage.title}
@@ -160,7 +157,7 @@ function RouteComponent() {
             {nextPage ? (
               <Link
                 to="/docs/$slug/$pageSlug"
-                params={{ slug, pageSlug: nextPage.id }}
+                params={{ slug, pageSlug: nextPage.slug }}
                 className={cn(buttonVariants({ variant: "outline" }))}
               >
                 {nextPage.title} →

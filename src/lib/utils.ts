@@ -1,3 +1,12 @@
+export function generateSlug(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
+}
+
 export function initials(name: string): string {
   return name
     .replace(/[^a-zA-Z\s-]/g, "")

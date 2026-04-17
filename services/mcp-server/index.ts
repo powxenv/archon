@@ -7,6 +7,7 @@ import { eq, and } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
 import { documentations, documentationPages } from "../../src/lib/server/db/schema.server";
+import { generateSlug } from "../../src/lib/utils";
 
 const DOCUMENTATION_ID = process.env.DOCUMENTATION_ID;
 
@@ -53,10 +54,30 @@ server.registerTool(
   },
   async ({ title, type, content, parentId, order }) => {
     const id = createId();
+    const baseSlug = generateSlug(title) || `page-${id.slice(0, 8)}`;
+    let slug = baseSlug;
+    let suffix = 1;
+    while (true) {
+      const existing = await db
+        .select({ id: documentationPages.id })
+        .from(documentationPages)
+        .where(
+          and(
+            eq(documentationPages.documentationId, DOCUMENTATION_ID),
+            eq(documentationPages.slug, slug),
+          ),
+        )
+        .limit(1);
+      if (existing.length === 0) break;
+      slug = `${baseSlug}-${suffix}`;
+      suffix++;
+    }
+
     await db.insert(documentationPages).values({
       id,
       documentationId: DOCUMENTATION_ID,
       title,
+      slug,
       type,
       content,
       parentId,
@@ -67,7 +88,7 @@ server.registerTool(
       content: [
         {
           type: "text" as const,
-          text: JSON.stringify({ id, documentationId: DOCUMENTATION_ID, title, type }),
+          text: JSON.stringify({ id, slug, documentationId: DOCUMENTATION_ID, title, type }),
         },
       ],
     };
@@ -87,6 +108,7 @@ server.registerTool(
       .select({
         id: documentationPages.id,
         title: documentationPages.title,
+        slug: documentationPages.slug,
         parentId: documentationPages.parentId,
         order: documentationPages.order,
       })

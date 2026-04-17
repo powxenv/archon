@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { Button, Spinner } from "@heroui/react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import NewForm from "#/components/new-form";
-import { getLatestJob } from "#/lib/func/jobs.functions";
+import { getLatestJob, cancelDocumentationJob } from "#/lib/func/jobs.functions";
+import { regenerateDocumentation } from "#/lib/func/docs.functions";
 import type { JobWithMetadata } from "#/lib/server/jobs/index.server";
 
 export const Route = createFileRoute("/_app_/app/new/$documentationId/status")({
@@ -14,27 +15,85 @@ function RouteComponent() {
   const navigate = useNavigate();
   const [job, setJob] = useState<JobWithMetadata | null>(null);
   const [loading, setLoading] = useState(true);
+  const [regenerating, setRegenerating] = useState(false);
+  const [cancelling, setCancelling] = useState(false);
+
+  const handleCancel = async () => {
+    if (!job) return;
+    setCancelling(true);
+    try {
+      await cancelDocumentationJob({ data: job.id });
+      setJob({ ...job, status: "cancelled" });
+    } catch {
+      setCancelling(false);
+    }
+  };
 
   useEffect(() => {
+    let cancelled = false;
+
     const pollJobStatus = async () => {
       try {
         const latestJob = await getLatestJob({ data: documentationId });
+        if (cancelled) return;
         setJob(latestJob);
         setLoading(false);
 
-        if (latestJob?.status === "completed" || latestJob?.status === "failed") {
+        if (
+          latestJob?.status === "completed" ||
+          latestJob?.status === "failed" ||
+          latestJob?.status === "cancelled"
+        ) {
           return;
         }
 
         setTimeout(pollJobStatus, 2000);
       } catch (error) {
         console.error("Failed to fetch job status:", error);
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
     void pollJobStatus();
+    return () => {
+      cancelled = true;
+    };
   }, [documentationId]);
+
+  const handleRegenerate = async () => {
+    setRegenerating(true);
+    try {
+      await regenerateDocumentation({ data: documentationId });
+      setJob(null);
+      setLoading(true);
+      setRegenerating(false);
+
+      const pollJobStatus = async () => {
+        try {
+          const latestJob = await getLatestJob({ data: documentationId });
+          setJob(latestJob);
+          setLoading(false);
+
+          if (
+            latestJob?.status === "completed" ||
+            latestJob?.status === "failed" ||
+            latestJob?.status === "cancelled"
+          ) {
+            return;
+          }
+
+          setTimeout(pollJobStatus, 2000);
+        } catch (error) {
+          console.error("Failed to fetch job status:", error);
+          setLoading(false);
+        }
+      };
+
+      void pollJobStatus();
+    } catch {
+      setRegenerating(false);
+    }
+  };
 
   const getStatusMessage = () => {
     if (!job) return "Initializing...";
@@ -55,15 +114,7 @@ function RouteComponent() {
     }
   };
 
-  const getStatusIcon = () => {
-    if (!job || job.status === "pending" || job.status === "running") {
-      return <Spinner size="lg" />;
-    }
-    return null;
-  };
-
-  const isFinished =
-    job?.status === "completed" || job?.status === "failed" || job?.status === "cancelled";
+  const isActive = !job || job.status === "pending" || job.status === "running";
 
   return (
     <NewForm
@@ -79,18 +130,30 @@ function RouteComponent() {
         ) : (
           <>
             <div className="flex flex-col items-center gap-1 p-4 border border-gray-200 rounded-lg">
-              {getStatusIcon()}
+              {isActive && <Spinner size="lg" />}
               <p className="text-lg font-medium">{getStatusMessage()}</p>
               {job?.errorMessage && <p className="text-sm text-danger">{job.errorMessage}</p>}
               {job?.status === "running" && (
                 <p className="text-sm text-muted-foreground">This may take a few minutes...</p>
               )}
             </div>
-            {isFinished && (
-              <div className="flex justify-end">
-                <Button onPress={() => navigate({ to: "/app" })}>View Documentation</Button>
-              </div>
-            )}
+            <div className="flex justify-end gap-2">
+              {isActive && (
+                <Button variant="outline" onPress={handleCancel} isDisabled={cancelling}>
+                  {cancelling ? <Spinner size="sm" /> : "Cancel"}
+                </Button>
+              )}
+              {(job?.status === "failed" || job?.status === "cancelled") && (
+                <Button onPress={handleRegenerate} isDisabled={regenerating}>
+                  {regenerating ? <Spinner size="sm" /> : "Regenerate"}
+                </Button>
+              )}
+              {job?.status === "completed" && (
+                <Button onPress={() => navigate({ to: "/app" })}>
+                  View Documentation
+                </Button>
+              )}
+            </div>
           </>
         )}
       </div>

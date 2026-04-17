@@ -13,8 +13,7 @@ export const Route = createFileRoute("/docs/$slug/")({
       if (
         result.isOwner &&
         result.jobStatus &&
-        result.jobStatus !== "completed" &&
-        result.jobStatus !== "failed"
+        result.jobStatus !== "completed"
       ) {
         throw redirect({
           to: "/app/new/$documentationId/status",
@@ -33,7 +32,7 @@ export const Route = createFileRoute("/docs/$slug/")({
       to: "/docs/$slug/$pageSlug",
       params: {
         slug: params.slug,
-        pageSlug: firstPage.id,
+        pageSlug: firstPage.slug,
       },
     });
   },

@@ -59,6 +59,7 @@ async function cloneRepository(
 ): Promise<void> {
   const repoName =
     repo.url
+      .replace(/\/+$/, "")
       .split("/")
       .pop()
       ?.replace(/\.git$/, "") ?? "repo";
@@ -68,7 +69,23 @@ async function cloneRepository(
     throw new Error(`Repository URL must use HTTPS. Got: ${repo.url}`);
   }
 
-  await $`git clone --depth 1 --branch ${repo.branch} ${repo.url} ${targetDir}`.quiet();
+  await $`rm -rf ${targetDir}`.quiet().nothrow();
+
+  try {
+    const proc = Bun.spawn([
+      "git", "clone", "--depth", "1", "--branch", repo.branch, repo.url, targetDir,
+    ], { stderr: "pipe" });
+    const stderr = await new Response(proc.stderr).text();
+    const exitCode = await proc.exited;
+    if (exitCode !== 0) {
+      throw new Error(
+        `git clone failed for ${repo.url} (branch: ${repo.branch}): ${stderr.trim() || `exit code ${exitCode}`}`,
+      );
+    }
+  } catch (error) {
+    if (error instanceof Error && error.message.startsWith("git clone failed")) throw error;
+    throw new Error(`git clone failed for ${repo.url} (branch: ${repo.branch}): ${error instanceof Error ? error.message : String(error)}`);
+  }
 }
 
 async function runOpencode(

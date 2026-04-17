@@ -10,7 +10,7 @@ import {
 } from "../server/jobs/index.server";
 import { z } from "zod";
 import { documentationJobs } from "../server/db/schema.server";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { db } from "../server/db/index.server";
 
 export const createJob = createServerFn({ method: "POST" })
@@ -79,7 +79,7 @@ export const getLatestJob = createServerFn({ method: "GET" })
       .select()
       .from(documentationJobs)
       .where(eq(documentationJobs.documentationId, data))
-      .orderBy(documentationJobs.createdAt)
+      .orderBy(desc(documentationJobs.createdAt))
       .limit(1);
 
     if (!job) return null;
