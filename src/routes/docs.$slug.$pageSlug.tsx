@@ -1,9 +1,11 @@
-import { buttonVariants, cn } from "@heroui/react";
+import { Button, buttonVariants, cn, Dropdown, Header, Label } from "@heroui/react";
 import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { getDocumentationPageBySlug } from "#/lib/func/docs.functions";
+import SolarPenNewSquareLinear from "~icons/solar/pen-new-square-linear";
+import SolarChatRoundDotsLinear from "~icons/solar/chat-round-dots-linear";
+import SolarAltArrowDownLinear from "~icons/solar/alt-arrow-down-linear";
 import { MarkdownContent } from "#/components/markdown-content";
-import { Fragment } from "react/jsx-runtime";
-import { useEffect, useRef } from "react";
+import { Fragment, useEffect, useRef } from "react";
 
 export const Route = createFileRoute("/docs/$slug/$pageSlug")({
   loader: async ({ params }) => {
@@ -27,7 +29,6 @@ export const Route = createFileRoute("/docs/$slug/$pageSlug")({
         jobStatus !== "completed" &&
         jobStatus !== "failed"
       ) {
-        console.log("asdbhasdashgdvasd");
         throw redirect({
           to: "/app/new/$documentationId/status",
           params: { documentationId: documentation.id },
@@ -62,6 +63,8 @@ function RouteComponent() {
   const prevPage = currentIndex > 0 ? sortedPages[currentIndex - 1] : null;
   const nextPage = currentIndex < sortedPages.length - 1 ? sortedPages[currentIndex + 1] : null;
 
+  const pageUrl = `${window.location.origin}/docs/${slug}/${page.id}`;
+
   return (
     <div className="flex flex-col">
       <header className="border-b bg-background/60 h-14 px-6 py-3 flex items-center justify-between">
@@ -69,7 +72,20 @@ function RouteComponent() {
           <img src="/archon.svg" className="size-6" alt="" />
           {documentation.name}
         </Link>
-        <nav className="flex gap-4 items-center">{/* Some button or link */}</nav>
+        <nav className="flex gap-2 items-center">
+          <AskAiDropdown pageUrl={pageUrl} />
+
+          {documentation.isOwner && (
+            <Link
+              to="/app/$documentationId"
+              params={{ documentationId: documentation.id }}
+              className={cn(buttonVariants({ variant: "outline", size: "sm" }))}
+            >
+              <SolarPenNewSquareLinear className="size-4" />
+              Edit
+            </Link>
+          )}
+        </nav>
       </header>
       <div className="flex h-[calc(100lvh-3.5rem)] pl-12">
         <aside className="py-4 h-full overflow-y-auto w-full max-w-80 shrink-0 border-x flex flex-col gap-2">
@@ -101,7 +117,7 @@ function RouteComponent() {
                   <span className="ml-6 text-sm -tracking-wider whitespace-nowrap font-semibold">
                     {group.title}
                   </span>
-                  <span className="h-px w-full bg-border"></span>
+                  <span className="h-px w-full bg-border" />
                 </div>
                 <div className="px-2">
                   {groupPages.map((groupPage) => (
@@ -162,5 +178,52 @@ function RouteComponent() {
         </div>
       </div>
     </div>
+  );
+}
+
+function AskAiDropdown({ pageUrl }: { pageUrl: string }) {
+  const createSearchUrl = (baseUrl: string, queryKey: string) => {
+    const url = new URL(baseUrl);
+    url.searchParams.set(queryKey, `Read ${pageUrl} and answer questions about it.`);
+    return url.toString();
+  };
+
+  const actionUrls = {
+    chatgpt: createSearchUrl("https://chatgpt.com/", "q"),
+    claude: createSearchUrl("https://claude.ai/new", "q"),
+    cursor: createSearchUrl("https://cursor.com/link/prompt", "text"),
+  };
+
+  const handleAction = (key: string) => {
+    const url = actionUrls[key as keyof typeof actionUrls];
+    if (!url) return;
+
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
+  return (
+    <Dropdown>
+      <Button type="button" variant="outline" size="sm">
+        <SolarChatRoundDotsLinear className="size-4" />
+        Ask AI
+        <SolarAltArrowDownLinear className="size-3" />
+      </Button>
+      <Dropdown.Popover>
+        <Dropdown.Menu aria-label="Ask AI" onAction={(key) => handleAction(String(key))}>
+          <Dropdown.Section>
+            <Header>Ask about this page</Header>
+            <Dropdown.Item id="chatgpt" textValue="Ask ChatGPT">
+              <Label>Ask ChatGPT</Label>
+            </Dropdown.Item>
+            <Dropdown.Item id="claude" textValue="Ask Claude">
+              <Label>Ask Claude</Label>
+            </Dropdown.Item>
+            <Dropdown.Item id="cursor" textValue="Ask Cursor">
+              <Label>Ask Cursor</Label>
+            </Dropdown.Item>
+          </Dropdown.Section>
+        </Dropdown.Menu>
+      </Dropdown.Popover>
+    </Dropdown>
   );
 }

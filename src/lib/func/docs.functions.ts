@@ -157,6 +157,7 @@ export const getDocumentationBySlug = createServerFn({ method: "GET" })
         slug: documentationTable.slug,
         description: documentationTable.description,
         isGenerated: documentationTable.isGenerated,
+        isPublic: documentationTable.isPublic,
         userId: documentationTable.userId,
         documentationTypeId: documentationTable.documentationTypeId,
       })
@@ -165,6 +166,11 @@ export const getDocumentationBySlug = createServerFn({ method: "GET" })
       .limit(1);
 
     if (!documentation) {
+      return null;
+    }
+
+    const isOwner = session?.user?.id === documentation.userId;
+    if (!documentation.isPublic && !isOwner) {
       return null;
     }
 
@@ -193,7 +199,7 @@ export const getDocumentationBySlug = createServerFn({ method: "GET" })
     return {
       ...documentation,
       pages,
-      isOwner: session?.user?.id === documentation.userId,
+      isOwner,
       jobStatus: latestJob[0]?.status ?? null,
     };
   });
@@ -215,6 +221,7 @@ export const getDocumentationPageBySlug = createServerFn({ method: "GET" })
         slug: documentationTable.slug,
         description: documentationTable.description,
         isGenerated: documentationTable.isGenerated,
+        isPublic: documentationTable.isPublic,
         userId: documentationTable.userId,
       })
       .from(documentationTable)
@@ -222,6 +229,11 @@ export const getDocumentationPageBySlug = createServerFn({ method: "GET" })
       .limit(1);
 
     if (!documentation) {
+      return null;
+    }
+
+    const isOwner = session?.user?.id === documentation.userId;
+    if (!documentation.isPublic && !isOwner) {
       return null;
     }
 
@@ -271,7 +283,7 @@ export const getDocumentationPageBySlug = createServerFn({ method: "GET" })
     return {
       documentation: {
         ...documentation,
-        isOwner: session?.user?.id === documentation.userId,
+        isOwner,
       },
       page: {
         ...page,
@@ -280,4 +292,165 @@ export const getDocumentationPageBySlug = createServerFn({ method: "GET" })
       pages: allPages,
       jobStatus: latestJob[0]?.status ?? null,
     };
+  });
+
+export const getDocumentationForEdit = createServerFn({ method: "GET" })
+  .inputValidator(z.string())
+  .handler(async ({ data: documentationId }) => {
+    const session = await ensureSession();
+
+    const [documentation] = await db
+      .select({
+        id: documentationTable.id,
+        name: documentationTable.name,
+        slug: documentationTable.slug,
+        description: documentationTable.description,
+        isGenerated: documentationTable.isGenerated,
+        isPublic: documentationTable.isPublic,
+        isDirty: documentationTable.isDirty,
+        userId: documentationTable.userId,
+        documentationTypeId: documentationTable.documentationTypeId,
+      })
+      .from(documentationTable)
+      .where(eq(documentationTable.id, documentationId))
+      .limit(1);
+
+    if (!documentation || documentation.userId !== session.user.id) {
+      throw new Error("Documentation not found");
+    }
+
+    let docType = null;
+    if (documentation.documentationTypeId) {
+      const [result] = await db
+        .select({
+          id: documentationTypes.id,
+          name: documentationTypes.name,
+          slug: documentationTypes.slug,
+          description: documentationTypes.description,
+        })
+        .from(documentationTypes)
+        .where(eq(documentationTypes.id, documentation.documentationTypeId))
+        .limit(1);
+      docType = result ?? null;
+    }
+
+    const repos = await db
+      .select({ id: repositories.id, url: repositories.url, branch: repositories.branch })
+      .from(repositories)
+      .where(eq(repositories.documentationId, documentationId));
+
+    const pages = await db
+      .select({
+        id: documentationPages.id,
+        type: documentationPages.type,
+        parentId: documentationPages.parentId,
+        title: documentationPages.title,
+        content: documentationPages.content,
+        order: documentationPages.order,
+      })
+      .from(documentationPages)
+      .where(eq(documentationPages.documentationId, documentationId))
+      .orderBy(asc(documentationPages.order));
+
+    return {
+      ...documentation,
+      documentationType: docType ?? null,
+      repositories: repos,
+      pages,
+    };
+  });
+
+export const updateDocumentation = createServerFn({ method: "POST" })
+  .inputValidator(
+    z.object({
+      documentationId: z.string(),
+      name: z.string().min(1).max(255).optional(),
+      description: z.string().optional(),
+      isPublic: z.boolean().optional(),
+      isDirty: z.boolean().optional(),
+      repositories: z
+        .array(
+          z.object({
+            url: z.string().url().refine((url) => url.startsWith("https://"), {
+              message: "Repository URL must use HTTPS",
+            }),
+            branch: z.string(),
+          }),
+        )
+        .optional(),
+      pages: z
+        .array(
+          z.object({
+            id: z.string(),
+            title: z.string().min(1),
+            content: z.string(),
+          }),
+        )
+        .optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const session = await ensureSession();
+
+    const [existing] = await db
+      .select({ userId: documentationTable.userId })
+      .from(documentationTable)
+      .where(eq(documentationTable.id, data.documentationId))
+      .limit(1);
+
+    if (!existing || existing.userId !== session.user.id) {
+      throw new Error("Documentation not found");
+    }
+
+    const shouldMarkDirty =
+      data.name !== undefined ||
+      data.description !== undefined ||
+      data.repositories !== undefined ||
+      data.pages !== undefined;
+
+    if (shouldMarkDirty || data.isPublic !== undefined || data.isDirty !== undefined) {
+      const updates: Record<string, unknown> = {};
+      if (data.name !== undefined) updates.name = data.name;
+      if (data.description !== undefined) updates.description = data.description;
+      if (data.isPublic !== undefined) updates.isPublic = data.isPublic;
+      if (data.isDirty !== undefined) updates.isDirty = data.isDirty;
+      if (shouldMarkDirty && data.isDirty === undefined) updates.isDirty = true;
+
+      if (Object.keys(updates).length > 0) {
+        await db
+          .update(documentationTable)
+          .set(updates)
+          .where(eq(documentationTable.id, data.documentationId));
+      }
+    }
+
+    if (data.repositories !== undefined) {
+      await db
+        .delete(repositories)
+        .where(eq(repositories.documentationId, data.documentationId));
+
+      for (const repo of data.repositories) {
+        await db.insert(repositories).values({
+          documentationId: data.documentationId,
+          url: repo.url,
+          branch: repo.branch,
+        });
+      }
+    }
+
+    if (data.pages !== undefined) {
+      for (const page of data.pages) {
+        await db
+          .update(documentationPages)
+          .set({ title: page.title, content: page.content })
+          .where(
+            and(
+              eq(documentationPages.id, page.id),
+              eq(documentationPages.documentationId, data.documentationId),
+            ),
+          );
+      }
+    }
+
+    return { success: true };
   });

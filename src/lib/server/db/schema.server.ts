@@ -31,6 +31,8 @@ export const documentations = pgTable(
       onDelete: "restrict",
     }),
     isGenerated: boolean("is_generated").default(false).notNull(),
+    isPublic: boolean("is_public").default(false).notNull(),
+    isDirty: boolean("is_dirty").default(false).notNull(),
     name: varchar("name", { length: 255 }).notNull(),
     slug: varchar("slug", { length: 255 }).notNull().unique(),
     description: text("description"),
