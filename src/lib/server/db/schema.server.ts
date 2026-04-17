@@ -12,9 +12,9 @@ import {
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
-import { user } from "./auth";
+import { user } from "./auth.server";
 
-export * from "./auth";
+export * from "./auth.server";
 
 export const pageTypeEnum = pgEnum("page_type", ["page", "group"]);
 

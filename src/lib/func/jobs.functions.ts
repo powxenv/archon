@@ -7,11 +7,11 @@ import {
   cancelJob,
   type JobWithMetadata,
   type DocumentationJob,
-} from "../server/jobs";
+} from "../server/jobs/index.server";
 import { z } from "zod";
-import { documentationJobs } from "../server/db/schema";
+import { documentationJobs } from "../server/db/schema.server";
 import { eq } from "drizzle-orm";
-import { db } from "../server/db";
+import { db } from "../server/db/index.server";
 
 export const createJob = createServerFn({ method: "POST" })
   .inputValidator(

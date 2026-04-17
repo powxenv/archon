@@ -9,7 +9,7 @@ import { z } from "zod";
 import {
   documentations,
   documentationPages,
-} from "../../src/lib/server/db/schema";
+} from "../../src/lib/server/db/schema.server";
 
 const DOCUMENTATION_ID = process.env.DOCUMENTATION_ID;
 

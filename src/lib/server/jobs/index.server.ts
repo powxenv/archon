@@ -1,8 +1,8 @@
-import { db } from "../db";
+import { db } from "../db/index.server";
 import {
   documentationJobs,
   type DocumentationJob,
-} from "../db/schema";
+} from "../db/schema.server";
 import { eq, and, lt, desc, sql } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 

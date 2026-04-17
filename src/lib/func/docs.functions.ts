@@ -1,10 +1,10 @@
 import { createServerFn } from "@tanstack/react-start";
 import { ensureSession } from "./auth.functions";
-import { db } from "../server/db";
-import { documentationTypes, documentations as documentationTable, repositories } from "#/lib/server/db/schema";
+import { db } from "../server/db/index.server";
+import { documentationTypes, documentations as documentationTable, repositories } from "#/lib/server/db/schema.server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { enqueueJob } from "../server/jobs";
+import { enqueueJob } from "../server/jobs/index.server";
 
 export const getDocumentations = createServerFn({ method: "GET" }).handler(async () => {
   const session = await ensureSession();

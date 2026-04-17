@@ -1,5 +1,5 @@
-import { db } from "./index";
-import { documentationTypes } from "./schema";
+import { db } from "./index.server";
+import { documentationTypes } from "./schema.server";
 
 const documentationTypeSeeds = [
   {

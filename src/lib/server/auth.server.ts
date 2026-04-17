@@ -1,10 +1,10 @@
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
-import { db } from "./db";
+import { db } from "./db/index.server";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { env } from "../env";
 import { createAuthMiddleware } from "better-auth/api";
-import * as schema from "./db/schema";
+import * as schema from "./db/schema.server";
 
 const ALLOWED_DOMAINS = ["testsprite.com"];
 const ALLOWED_EMAILS = ["bykaelren@gmail.com"];

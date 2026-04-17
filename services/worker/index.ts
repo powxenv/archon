@@ -1,12 +1,12 @@
 #!/usr/bin/env bun
-import { db } from "../../src/lib/server/db";
-import { documentationJobs } from "../../src/lib/server/db/schema";
+import { db } from "../../src/lib/server/db/index.server";
+import { documentationJobs } from "../../src/lib/server/db/schema.server";
 import { eq } from "drizzle-orm";
 import {
   dequeueJob,
   updateJobStatus,
   type JobWithMetadata,
-} from "../../src/lib/server/jobs";
+} from "../../src/lib/server/jobs/index.server";
 import { $ } from "bun";
 
 const JOBS_DIR = "/tmp/archon-jobs";
