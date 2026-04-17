@@ -6,10 +6,7 @@ import { drizzle } from "drizzle-orm/neon-http";
 import { eq, and } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 import { z } from "zod";
-import {
-  documentations,
-  documentationPages,
-} from "../../src/lib/server/db/schema.server";
+import { documentations, documentationPages } from "../../src/lib/server/db/schema.server";
 
 const DOCUMENTATION_ID = process.env.DOCUMENTATION_ID;
 
@@ -50,14 +47,8 @@ server.registerTool(
         .string()
         .optional()
         .describe("Page body content in markdown. Required for pages, omitted for groups."),
-      parentId: z
-        .string()
-        .optional()
-        .describe("Parent group ID to nest this page under"),
-      order: z
-        .number()
-        .optional()
-        .describe("Sort order within siblings"),
+      parentId: z.string().optional().describe("Parent group ID to nest this page under"),
+      order: z.number().optional().describe("Sort order within siblings"),
     },
   },
   async ({ title, type, content, parentId, order }) => {

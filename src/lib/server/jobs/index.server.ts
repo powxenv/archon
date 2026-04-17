@@ -1,8 +1,5 @@
 import { db } from "../db/index.server";
-import {
-  documentationJobs,
-  type DocumentationJob,
-} from "../db/schema.server";
+import { documentationJobs, type DocumentationJob } from "../db/schema.server";
 import { eq, and, lt, desc, gt } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
 
@@ -53,10 +50,7 @@ export async function dequeueJob(): Promise<JobWithMetadata | null> {
     .select()
     .from(documentationJobs)
     .where(
-      and(
-        eq(documentationJobs.status, "pending"),
-        gt(documentationJobs.createdAt, staleThreshold),
-      ),
+      and(eq(documentationJobs.status, "pending"), gt(documentationJobs.createdAt, staleThreshold)),
     )
     .orderBy(documentationJobs.createdAt)
     .limit(1)
@@ -157,10 +151,7 @@ export async function resetStaleJobs(): Promise<number> {
       errorMessage: "Job timed out and was reset",
     })
     .where(
-      and(
-        eq(documentationJobs.status, "running"),
-        lt(documentationJobs.startedAt, staleThreshold),
-      ),
+      and(eq(documentationJobs.status, "running"), lt(documentationJobs.startedAt, staleThreshold)),
     );
 
   return result.rowCount ?? 0;

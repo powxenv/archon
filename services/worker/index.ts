@@ -48,10 +48,7 @@ async function setupJobDirectory(jobId: string, documentationId: string): Promis
     };
   }
 
-  await Bun.write(
-    `${jobDir}/opencode.json`,
-    JSON.stringify(opencodeConfig, null, 2),
-  );
+  await Bun.write(`${jobDir}/opencode.json`, JSON.stringify(opencodeConfig, null, 2));
 
   return jobDir;
 }
@@ -60,7 +57,11 @@ async function cloneRepository(
   jobDir: string,
   repo: { url: string; branch: string },
 ): Promise<void> {
-  const repoName = repo.url.split("/").pop()?.replace(/\.git$/, "") ?? "repo";
+  const repoName =
+    repo.url
+      .split("/")
+      .pop()
+      ?.replace(/\.git$/, "") ?? "repo";
   const targetDir = `${jobDir}/${repoName}`;
 
   if (!repo.url.startsWith("https://")) {
@@ -77,28 +78,18 @@ async function runOpencode(
 ): Promise<string> {
   const opencodePath = process.env.OPENCODE_PATH ?? "opencode";
 
-  const proc = Bun.spawn(
-    [
-      opencodePath,
-      "run",
-      prompt,
-      "--format",
-      "json",
-      "--pure",
-    ],
-    {
-      cwd: jobDir,
-      stdout: "pipe",
-      stderr: "pipe",
-      env: {
-        ...process.env,
-        OPENCODE_AUTO_SHARE: "false",
-        DATABASE_URL: process.env.DATABASE_URL,
-        DOCUMENTATION_ID: documentationId,
-        EXA_API_KEY: process.env.EXA_API_KEY,
-      },
+  const proc = Bun.spawn([opencodePath, "run", prompt, "--format", "json", "--pure"], {
+    cwd: jobDir,
+    stdout: "pipe",
+    stderr: "pipe",
+    env: {
+      ...process.env,
+      OPENCODE_AUTO_SHARE: "false",
+      DATABASE_URL: process.env.DATABASE_URL,
+      DOCUMENTATION_ID: documentationId,
+      EXA_API_KEY: process.env.EXA_API_KEY,
     },
-  );
+  });
 
   const output = await new Response(proc.stdout).text();
   await proc.exited;
@@ -175,7 +166,9 @@ Documentation Tools (archon-docs MCP):
 - create_page: Create documentation pages and groups under this documentation
 - get_groups: Discover existing groups before placing pages under them
 - mark_generated: Mark documentation generation as complete (requires a description of what the documentation covers)
-${hasExa ? `Research Tools (Exa MCP):
+${
+  hasExa
+    ? `Research Tools (Exa MCP):
 - web_search_exa: Search the web for current information, documentation, and best practices
 - web_search_advanced_exa: Advanced web search with more control over results
 - get_code_context_exa: Get code context and examples from the web
@@ -183,7 +176,9 @@ ${hasExa ? `Research Tools (Exa MCP):
 - crawling_exa: Crawl specific websites for detailed information
 - deep_researcher_start: Start a deep research task for complex topics
 - deep_researcher_check: Check status of deep research tasks
-` : ""}CRITICAL EXECUTION RULES:
+`
+    : ""
+}CRITICAL EXECUTION RULES:
 - You MUST explore the ENTIRE codebase before writing any documentation
 - Read files, search for patterns, and understand the full scope
 - NEVER make assumptions - verify everything through actual code inspection

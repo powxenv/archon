@@ -22,7 +22,11 @@ import SolarCode2Linear from "~icons/solar/code-2-linear";
 import SolarDocumentLineDuotone from "~icons/solar/document-line-duotone";
 import SolarRocket2Linear from "~icons/solar/rocket-2-linear";
 import NewForm from "#/components/new-form";
-import { getDocumentationTypes, getRepoBranches, createDocumentation } from "#/lib/func/docs.functions.ts";
+import {
+  getDocumentationTypes,
+  getRepoBranches,
+  createDocumentation,
+} from "#/lib/func/docs.functions.ts";
 
 const iconMap: Record<string, ReactElement> = {
   onboarding: <SolarRocket2Linear className="size-5" />,

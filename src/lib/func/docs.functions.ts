@@ -1,7 +1,13 @@
 import { createServerFn } from "@tanstack/react-start";
 import { ensureSession, getSession } from "./auth.functions";
 import { db } from "../server/db/index.server";
-import { documentationTypes, documentations as documentationTable, repositories, documentationPages, documentationJobs } from "#/lib/server/db/schema.server";
+import {
+  documentationTypes,
+  documentations as documentationTable,
+  repositories,
+  documentationPages,
+  documentationJobs,
+} from "#/lib/server/db/schema.server";
 import { eq, and, asc } from "drizzle-orm";
 import { z } from "zod";
 import { enqueueJob } from "../server/jobs/index.server";
@@ -14,7 +20,10 @@ export const getDocumentations = createServerFn({ method: "GET" }).handler(async
     .select()
     .from(documentationTable)
     .where(eq(documentationTable.userId, session.user.id))
-    .innerJoin(documentationTypes, eq(documentationTable.documentationTypeId, documentationTypes.id));
+    .innerJoin(
+      documentationTypes,
+      eq(documentationTable.documentationTypeId, documentationTypes.id),
+    );
 
   return documentations;
 });
@@ -33,9 +42,12 @@ export const createDocumentation = createServerFn({ method: "POST" })
       documentationTypeId: z.string(),
       repositories: z.array(
         z.object({
-          url: z.string().url().refine((url) => url.startsWith("https://"), {
-            message: "Repository URL must use HTTPS",
-          }),
+          url: z
+            .string()
+            .url()
+            .refine((url) => url.startsWith("https://"), {
+              message: "Repository URL must use HTTPS",
+            }),
           branch: z.string(),
         }),
       ),
@@ -136,9 +148,12 @@ export const getRepoBranches = createServerFn({ method: "GET" })
     const parsed = parseGitHubUrl(data);
     if (!parsed) return [];
 
-    const res = await fetch(`https://api.github.com/repos/${parsed.owner}/${parsed.repo}/branches`, {
-      headers: { "User-Agent": "archon" },
-    });
+    const res = await fetch(
+      `https://api.github.com/repos/${parsed.owner}/${parsed.repo}/branches`,
+      {
+        headers: { "User-Agent": "archon" },
+      },
+    );
     if (!res.ok) return [];
 
     const branches: GitHubBranch[] = await res.json();
@@ -371,9 +386,12 @@ export const updateDocumentation = createServerFn({ method: "POST" })
       repositories: z
         .array(
           z.object({
-            url: z.string().url().refine((url) => url.startsWith("https://"), {
-              message: "Repository URL must use HTTPS",
-            }),
+            url: z
+              .string()
+              .url()
+              .refine((url) => url.startsWith("https://"), {
+                message: "Repository URL must use HTTPS",
+              }),
             branch: z.string(),
           }),
         )
@@ -425,9 +443,7 @@ export const updateDocumentation = createServerFn({ method: "POST" })
     }
 
     if (data.repositories !== undefined) {
-      await db
-        .delete(repositories)
-        .where(eq(repositories.documentationId, data.documentationId));
+      await db.delete(repositories).where(eq(repositories.documentationId, data.documentationId));
 
       for (const repo of data.repositories) {
         await db.insert(repositories).values({

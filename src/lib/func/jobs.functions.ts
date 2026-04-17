@@ -19,9 +19,12 @@ export const createJob = createServerFn({ method: "POST" })
       documentationId: z.string(),
       repositories: z.array(
         z.object({
-          url: z.string().url().refine((url) => url.startsWith("https://"), {
-            message: "Repository URL must use HTTPS",
-          }),
+          url: z
+            .string()
+            .url()
+            .refine((url) => url.startsWith("https://"), {
+              message: "Repository URL must use HTTPS",
+            }),
           branch: z.string(),
         }),
       ),
