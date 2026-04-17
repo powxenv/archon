@@ -147,6 +147,7 @@ function RouteComponent() {
       <NewForm
         title="Name Your Documentation"
         description="Pick a clear name so you can easily find it later"
+        onBack={() => navigate({ to: "/app" })}
       >
         <div className="mt-4 flex flex-col gap-2">
           <TextField name="doc-name" variant="secondary">
