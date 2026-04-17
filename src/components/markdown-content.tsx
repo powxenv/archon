@@ -7,7 +7,7 @@ export function MarkdownContent({ html }: MarkdownContentProps) {
 
   return (
     <div
-      className="prose prose-zinc dark:prose-invert max-w-none mx-auto"
+      className="prose [&_pre.mermaid]:border [&_pre.mermaid]:rounded-xl [&_pre.mermaid]:bg-transparent prose-zinc dark:prose-invert max-w-none mx-auto"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );

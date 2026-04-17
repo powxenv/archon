@@ -46,8 +46,10 @@ function RouteComponent() {
   useEffect(() => {
     if (contentRef.current) {
       contentRef.current.scrollTo({ top: 0, behavior: "smooth" });
-      mermaid.initialize({ startOnLoad: true });
     }
+
+    mermaid.initialize({ startOnLoad: false, theme: "default", suppressErrorRendering: true });
+    void mermaid.run({ querySelector: ".mermaid" });
   }, [page.id]);
 
   const rootPages = pages.filter((p) => p.type === "page" && !p.parentId);
