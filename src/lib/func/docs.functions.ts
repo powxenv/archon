@@ -1,10 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
-import { ensureSession } from "./auth.functions";
+import { ensureSession, getSession } from "./auth.functions";
 import { db } from "../server/db/index.server";
-import { documentationTypes, documentations as documentationTable, repositories } from "#/lib/server/db/schema.server";
-import { eq } from "drizzle-orm";
+import { documentationTypes, documentations as documentationTable, repositories, documentationPages, documentationJobs } from "#/lib/server/db/schema.server";
+import { eq, and, asc } from "drizzle-orm";
 import { z } from "zod";
 import { enqueueJob } from "../server/jobs/index.server";
+import { renderMarkdown } from "../utils/markdown";
 
 export const getDocumentations = createServerFn({ method: "GET" }).handler(async () => {
   const session = await ensureSession();
@@ -142,4 +143,141 @@ export const getRepoBranches = createServerFn({ method: "GET" })
 
     const branches: GitHubBranch[] = await res.json();
     return branches.map((b: GitHubBranch) => b.name);
+  });
+
+export const getDocumentationBySlug = createServerFn({ method: "GET" })
+  .inputValidator(z.string())
+  .handler(async ({ data }) => {
+    const session = await getSession();
+
+    const [documentation] = await db
+      .select({
+        id: documentationTable.id,
+        name: documentationTable.name,
+        slug: documentationTable.slug,
+        description: documentationTable.description,
+        isGenerated: documentationTable.isGenerated,
+        userId: documentationTable.userId,
+        documentationTypeId: documentationTable.documentationTypeId,
+      })
+      .from(documentationTable)
+      .where(eq(documentationTable.slug, data))
+      .limit(1);
+
+    if (!documentation) {
+      return null;
+    }
+
+    const pages = await db
+      .select({
+        id: documentationPages.id,
+        type: documentationPages.type,
+        parentId: documentationPages.parentId,
+        title: documentationPages.title,
+        content: documentationPages.content,
+        order: documentationPages.order,
+      })
+      .from(documentationPages)
+      .where(eq(documentationPages.documentationId, documentation.id))
+      .orderBy(asc(documentationPages.order));
+
+    const latestJob = await db
+      .select({
+        status: documentationJobs.status,
+      })
+      .from(documentationJobs)
+      .where(eq(documentationJobs.documentationId, documentation.id))
+      .orderBy(documentationJobs.createdAt)
+      .limit(1);
+
+    return {
+      ...documentation,
+      pages,
+      isOwner: session?.user?.id === documentation.userId,
+      jobStatus: latestJob[0]?.status ?? null,
+    };
+  });
+
+export const getDocumentationPageBySlug = createServerFn({ method: "GET" })
+  .inputValidator(
+    z.object({
+      documentationSlug: z.string(),
+      pageId: z.string(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const session = await getSession();
+
+    const [documentation] = await db
+      .select({
+        id: documentationTable.id,
+        name: documentationTable.name,
+        slug: documentationTable.slug,
+        description: documentationTable.description,
+        isGenerated: documentationTable.isGenerated,
+        userId: documentationTable.userId,
+      })
+      .from(documentationTable)
+      .where(eq(documentationTable.slug, data.documentationSlug))
+      .limit(1);
+
+    if (!documentation) {
+      return null;
+    }
+
+    const [page] = await db
+      .select({
+        id: documentationPages.id,
+        type: documentationPages.type,
+        parentId: documentationPages.parentId,
+        title: documentationPages.title,
+        content: documentationPages.content,
+        order: documentationPages.order,
+      })
+      .from(documentationPages)
+      .where(
+        and(
+          eq(documentationPages.documentationId, documentation.id),
+          eq(documentationPages.id, data.pageId),
+        ),
+      )
+      .limit(1);
+
+    if (!page) {
+      return null;
+    }
+
+    const allPages = await db
+      .select({
+        id: documentationPages.id,
+        type: documentationPages.type,
+        parentId: documentationPages.parentId,
+        title: documentationPages.title,
+        order: documentationPages.order,
+      })
+      .from(documentationPages)
+      .where(eq(documentationPages.documentationId, documentation.id))
+      .orderBy(asc(documentationPages.order));
+
+    const latestJob = await db
+      .select({
+        status: documentationJobs.status,
+      })
+      .from(documentationJobs)
+      .where(eq(documentationJobs.documentationId, documentation.id))
+      .orderBy(documentationJobs.createdAt)
+      .limit(1);
+
+    return {
+      documentation: {
+        ...documentation,
+        isOwner: session?.user?.id === documentation.userId,
+      },
+      page: {
+        ...page,
+        contentHtml: page.content ? renderMarkdown(page.content) : null,
+      },
+      pages: allPages,
+      jobStatus: latestJob[0]?.status ?? null,
+    };
   });

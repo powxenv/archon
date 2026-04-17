@@ -14,8 +14,10 @@ import { Route as AppRouteImport } from './routes/_app'
 import { Route as AuthIndexRouteImport } from './routes/auth.index'
 import { Route as AppIndexRouteImport } from './routes/_app.index'
 import { Route as AppAppRouteImport } from './routes/_app_.app'
+import { Route as DocsSlugIndexRouteImport } from './routes/docs.$slug.index'
 import { Route as AuthErrorIndexRouteImport } from './routes/auth.error.index'
 import { Route as AppAppIndexRouteImport } from './routes/_app.app.index'
+import { Route as DocsSlugPageSlugRouteImport } from './routes/docs.$slug.$pageSlug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppAppNewIndexRouteImport } from './routes/_app_.app.new.index'
 import { Route as AppAppNewDocumentationIdStatusRouteImport } from './routes/_app_.app.new.$documentationId.status'
@@ -44,6 +46,11 @@ const AppAppRoute = AppAppRouteImport.update({
   path: '/app',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DocsSlugIndexRoute = DocsSlugIndexRouteImport.update({
+  id: '/docs/$slug/',
+  path: '/docs/$slug/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthErrorIndexRoute = AuthErrorIndexRouteImport.update({
   id: '/error/',
   path: '/error/',
@@ -53,6 +60,11 @@ const AppAppIndexRoute = AppAppIndexRouteImport.update({
   id: '/app/',
   path: '/app/',
   getParentRoute: () => AppRoute,
+} as any)
+const DocsSlugPageSlugRoute = DocsSlugPageSlugRouteImport.update({
+  id: '/docs/$slug/$pageSlug',
+  path: '/docs/$slug/$pageSlug',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -77,8 +89,10 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppAppRouteWithChildren
   '/auth/': typeof AuthIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/docs/$slug/$pageSlug': typeof DocsSlugPageSlugRoute
   '/app/': typeof AppAppIndexRoute
   '/auth/error/': typeof AuthErrorIndexRoute
+  '/docs/$slug/': typeof DocsSlugIndexRoute
   '/app/new/': typeof AppAppNewIndexRoute
   '/app/new/$documentationId/status': typeof AppAppNewDocumentationIdStatusRoute
 }
@@ -87,7 +101,9 @@ export interface FileRoutesByTo {
   '/': typeof AppIndexRoute
   '/auth': typeof AuthIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/docs/$slug/$pageSlug': typeof DocsSlugPageSlugRoute
   '/auth/error': typeof AuthErrorIndexRoute
+  '/docs/$slug': typeof DocsSlugIndexRoute
   '/app/new': typeof AppAppNewIndexRoute
   '/app/new/$documentationId/status': typeof AppAppNewDocumentationIdStatusRoute
 }
@@ -99,8 +115,10 @@ export interface FileRoutesById {
   '/_app/': typeof AppIndexRoute
   '/auth/': typeof AuthIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/docs/$slug/$pageSlug': typeof DocsSlugPageSlugRoute
   '/_app/app/': typeof AppAppIndexRoute
   '/auth/error/': typeof AuthErrorIndexRoute
+  '/docs/$slug/': typeof DocsSlugIndexRoute
   '/_app_/app/new/': typeof AppAppNewIndexRoute
   '/_app_/app/new/$documentationId/status': typeof AppAppNewDocumentationIdStatusRoute
 }
@@ -112,8 +130,10 @@ export interface FileRouteTypes {
     | '/app'
     | '/auth/'
     | '/api/auth/$'
+    | '/docs/$slug/$pageSlug'
     | '/app/'
     | '/auth/error/'
+    | '/docs/$slug/'
     | '/app/new/'
     | '/app/new/$documentationId/status'
   fileRoutesByTo: FileRoutesByTo
@@ -122,7 +142,9 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/api/auth/$'
+    | '/docs/$slug/$pageSlug'
     | '/auth/error'
+    | '/docs/$slug'
     | '/app/new'
     | '/app/new/$documentationId/status'
   id:
@@ -133,8 +155,10 @@ export interface FileRouteTypes {
     | '/_app/'
     | '/auth/'
     | '/api/auth/$'
+    | '/docs/$slug/$pageSlug'
     | '/_app/app/'
     | '/auth/error/'
+    | '/docs/$slug/'
     | '/_app_/app/new/'
     | '/_app_/app/new/$documentationId/status'
   fileRoutesById: FileRoutesById
@@ -144,6 +168,8 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRouteWithChildren
   AppAppRoute: typeof AppAppRouteWithChildren
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
+  DocsSlugPageSlugRoute: typeof DocsSlugPageSlugRoute
+  DocsSlugIndexRoute: typeof DocsSlugIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -183,6 +209,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAppRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/docs/$slug/': {
+      id: '/docs/$slug/'
+      path: '/docs/$slug'
+      fullPath: '/docs/$slug/'
+      preLoaderRoute: typeof DocsSlugIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/error/': {
       id: '/auth/error/'
       path: '/error'
@@ -196,6 +229,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/'
       preLoaderRoute: typeof AppAppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/docs/$slug/$pageSlug': {
+      id: '/docs/$slug/$pageSlug'
+      path: '/docs/$slug/$pageSlug'
+      fullPath: '/docs/$slug/$pageSlug'
+      preLoaderRoute: typeof DocsSlugPageSlugRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -263,6 +303,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRouteWithChildren,
   AppAppRoute: AppAppRouteWithChildren,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
+  DocsSlugPageSlugRoute: DocsSlugPageSlugRoute,
+  DocsSlugIndexRoute: DocsSlugIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

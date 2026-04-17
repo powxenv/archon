@@ -47,7 +47,9 @@ function RouteComponent() {
             </div>
             <div className="grid grid-cols-3 gap-8 mt-16">
               {documentations.map((documentation) => (
-                <div
+                <Link
+                  to="/docs/$slug"
+                  params={{ slug: documentation.documentation.slug }}
                   style={{ transform: `rotate(${rot(documentation.documentation.id)}deg)` }}
                   className="border border-dashed p-1 rounded-2xl"
                 >
@@ -62,7 +64,7 @@ function RouteComponent() {
                       <div className="border p-4 rounded-lg">Generating</div>
                     )}
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
