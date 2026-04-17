@@ -6,6 +6,8 @@ export const env = createEnv({
     DATABASE_URL: z.url(),
     GITHUB_CLIENT_ID: z.string(),
     GITHUB_CLIENT_SECRET: z.string(),
+    MAX_CONCURRENT_JOBS: z.string().default("2"),
+    OPENCODE_PATH: z.string().optional(),
   },
 
   clientPrefix: "VITE_",

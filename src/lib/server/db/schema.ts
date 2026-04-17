@@ -8,6 +8,7 @@ import {
   pgEnum,
   type AnyPgColumn,
   boolean,
+  jsonb,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createId } from "@paralleldrive/cuid2";
@@ -109,6 +110,7 @@ export const documentationsRelations = relations(documentations, ({ one, many })
   }),
   repositories: many(repositories),
   documentationPages: many(documentationPages),
+  jobs: many(documentationJobs),
 }));
 
 export const repositoriesRelations = relations(repositories, ({ one, many }) => ({
@@ -134,3 +136,54 @@ export const documentationPagesRelations = relations(documentationPages, ({ one,
   }),
   children: many(documentationPages),
 }));
+
+export const jobStatusEnum = pgEnum("job_status", [
+  "pending",
+  "running",
+  "completed",
+  "failed",
+  "cancelled",
+]);
+
+export const documentationJobs = pgTable(
+  "documentation_jobs",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => createId()),
+    documentationId: text("documentation_id")
+      .notNull()
+      .references(() => documentations.id, { onDelete: "cascade" }),
+    status: jobStatusEnum("status").notNull().default("pending"),
+    startedAt: timestamp("started_at"),
+    completedAt: timestamp("completed_at"),
+    errorMessage: text("error_message"),
+    output: text("output"),
+    metadata: jsonb("metadata")
+      .$type<{
+        repositories: Array<{ url: string; branch: string }>;
+        documentationType: string;
+        systemPrompt?: string;
+      }>()
+      .notNull(),
+    createdAt: timestamp("created_at").defaultNow().notNull(),
+    updatedAt: timestamp("updated_at")
+      .$onUpdate(() => new Date())
+      .notNull(),
+  },
+  (table) => [
+    index("job_status_idx").on(table.status),
+    index("job_created_at_idx").on(table.createdAt),
+    index("job_documentation_id_idx").on(table.documentationId),
+  ],
+);
+
+export const documentationJobsRelations = relations(documentationJobs, ({ one }) => ({
+  documentation: one(documentations, {
+    fields: [documentationJobs.documentationId],
+    references: [documentations.id],
+  }),
+}));
+
+export type DocumentationJob = typeof documentationJobs.$inferSelect;
+export type NewDocumentationJob = typeof documentationJobs.$inferInsert;

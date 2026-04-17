@@ -46,13 +46,34 @@ function RouteComponent() {
   const [name, setName] = useState("");
   const [selectedType, setSelectedType] = useState<string>("");
   const [repoUrls, setRepoUrls] = useState<string[]>([""]);
+  const [urlErrors, setUrlErrors] = useState<Record<number, string>>({});
   const [branches, setBranches] = useState<Record<number, string>>({});
   const [repoBranchOptions, setRepoBranchOptions] = useState<Record<number, string[]>>({});
   const [branchesLoading, setBranchesLoading] = useState(false);
   const { contains } = useFilter({ sensitivity: "base" });
 
+  const validateRepoUrl = (url: string): string => {
+    if (!url.trim()) {
+      return "";
+    }
+    if (!url.startsWith("https://")) {
+      return "Repository URL must use HTTPS (e.g., https://github.com/org/repo)";
+    }
+    if (url.startsWith("git@")) {
+      return "SSH URLs are not supported. Use HTTPS instead.";
+    }
+    try {
+      new URL(url);
+    } catch {
+      return "Invalid URL format";
+    }
+    return "";
+  };
+
   const updateUrl = (index: number, value: string) => {
     setRepoUrls((prev) => prev.map((url, i) => (i === index ? value : url)));
+    const error = validateRepoUrl(value);
+    setUrlErrors((prev) => ({ ...prev, [index]: error }));
   };
 
   const addUrl = () => {
@@ -66,9 +87,15 @@ function RouteComponent() {
       delete next[index];
       return next;
     });
+    setUrlErrors((prev) => {
+      const next = { ...prev };
+      delete next[index];
+      return next;
+    });
   };
 
   const allReposFilled = repoUrls.every((url) => url.trim().length > 0);
+  const hasUrlErrors = Object.values(urlErrors).some((error) => error.length > 0);
 
   const fetchBranchesAndContinue = async () => {
     setBranchesLoading(true);
@@ -156,44 +183,62 @@ function RouteComponent() {
     return (
       <NewForm
         title="Add Repositories"
-        description="Link the Git repos you want to generate documentation from"
+        description="Link the Git repos you want to generate documentation from (HTTPS only, public repositories)"
         onBack={() => setStep("type")}
       >
         <div className="mt-4 flex flex-col gap-2">
           {repoUrls.map((url, index) =>
             repoUrls.length === 1 ? (
-              <TextField key={index} name={`repo-${index}`} variant="secondary">
-                <InputGroup variant="secondary">
-                  <InputGroup.Input
-                    aria-label="Repo URL"
-                    placeholder="https://github.com/org/repo"
-                    value={url}
-                    onChange={(e) => updateUrl(index, e.target.value)}
-                  />
-                </InputGroup>
-              </TextField>
+              <div key={index} className="flex flex-col gap-1">
+                <TextField
+                  name={`repo-${index}`}
+                  variant="secondary"
+                  isInvalid={Boolean(urlErrors[index])}
+                >
+                  <InputGroup variant="secondary">
+                    <InputGroup.Input
+                      aria-label="Repo URL"
+                      placeholder="https://github.com/org/repo"
+                      value={url}
+                      onChange={(e) => updateUrl(index, e.target.value)}
+                    />
+                  </InputGroup>
+                </TextField>
+                {urlErrors[index] && (
+                  <p className="text-sm text-danger">{urlErrors[index]}</p>
+                )}
+              </div>
             ) : (
-              <TextField key={index} name={`repo-${index}`} variant="secondary">
-                <InputGroup variant="secondary">
-                  <InputGroup.Input
-                    aria-label={`Repo URL ${index + 1}`}
-                    placeholder="https://github.com/org/repo"
-                    value={url}
-                    onChange={(e) => updateUrl(index, e.target.value)}
-                  />
-                  <InputGroup.Suffix className="pr-0">
-                    <Button
-                      isIconOnly
-                      aria-label="Remove"
-                      size="sm"
-                      variant="ghost"
-                      onPress={() => removeUrl(index)}
-                    >
-                      <SolarTrashBinMinimalistic2Linear className="size-4" />
-                    </Button>
-                  </InputGroup.Suffix>
-                </InputGroup>
-              </TextField>
+              <div key={index} className="flex flex-col gap-1">
+                <TextField
+                  name={`repo-${index}`}
+                  variant="secondary"
+                  isInvalid={Boolean(urlErrors[index])}
+                >
+                  <InputGroup variant="secondary">
+                    <InputGroup.Input
+                      aria-label={`Repo URL ${index + 1}`}
+                      placeholder="https://github.com/org/repo"
+                      value={url}
+                      onChange={(e) => updateUrl(index, e.target.value)}
+                    />
+                    <InputGroup.Suffix className="pr-0">
+                      <Button
+                        isIconOnly
+                        aria-label="Remove"
+                        size="sm"
+                        variant="ghost"
+                        onPress={() => removeUrl(index)}
+                      >
+                        <SolarTrashBinMinimalistic2Linear className="size-4" />
+                      </Button>
+                    </InputGroup.Suffix>
+                  </InputGroup>
+                </TextField>
+                {urlErrors[index] && (
+                  <p className="text-sm text-danger">{urlErrors[index]}</p>
+                )}
+              </div>
             ),
           )}
           <div className="flex items-center justify-between flex-wrap">
@@ -203,7 +248,7 @@ function RouteComponent() {
             </Button>
             <Button
               onPress={fetchBranchesAndContinue}
-              isDisabled={!allReposFilled || branchesLoading}
+              isDisabled={!allReposFilled || hasUrlErrors || branchesLoading}
             >
               {branchesLoading ? <Spinner /> : "Next"}
             </Button>

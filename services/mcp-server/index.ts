@@ -9,7 +9,13 @@ import { z } from "zod";
 import {
   documentations,
   documentationPages,
-} from "../lib/server/db/schema.js";
+} from "../../src/lib/server/db/schema";
+
+const DOCUMENTATION_ID = process.env.DOCUMENTATION_ID;
+
+if (!DOCUMENTATION_ID) {
+  throw new Error("DOCUMENTATION_ID environment variable is required");
+}
 
 const sql = neon(process.env.DATABASE_URL!);
 const db = drizzle(sql);
@@ -20,9 +26,10 @@ const server = new McpServer(
     capabilities: { logging: {} },
     instructions: [
       "Documentation storage server for Archon.",
+      "All operations automatically target the current documentation entry.",
       "Use create_page to store documentation pages and groups.",
       "Use get_groups to discover existing groups before placing pages under them.",
-      "Use mark_generated once all documentation pages have been written.",
+      "Use mark_generated when complete - provide a clear description of what the documentation covers.",
     ].join(" "),
   },
 );
@@ -32,9 +39,8 @@ server.registerTool(
   {
     title: "Create Documentation Page",
     description:
-      "Create a documentation page or group under a documentation entry. Use type 'group' to create a section header, and type 'page' for actual content.",
+      "Create a documentation page or group under the current documentation entry. Use type 'group' to create a section header, and type 'page' for actual content.",
     inputSchema: {
-      documentationId: z.string().describe("ID of the documentation entry"),
       title: z.string().describe("Page title"),
       type: z
         .enum(["page", "group"])
@@ -54,11 +60,11 @@ server.registerTool(
         .describe("Sort order within siblings"),
     },
   },
-  async ({ documentationId, title, type, content, parentId, order }) => {
+  async ({ title, type, content, parentId, order }) => {
     const id = createId();
     await db.insert(documentationPages).values({
       id,
-      documentationId,
+      documentationId: DOCUMENTATION_ID,
       title,
       type,
       content,
@@ -70,7 +76,7 @@ server.registerTool(
       content: [
         {
           type: "text" as const,
-          text: JSON.stringify({ id, documentationId, title, type }),
+          text: JSON.stringify({ id, documentationId: DOCUMENTATION_ID, title, type }),
         },
       ],
     };
@@ -82,14 +88,10 @@ server.registerTool(
   {
     title: "Get Documentation Groups",
     description:
-      "List all groups for a documentation entry. Use this to discover where to place new pages.",
-    inputSchema: {
-      documentationId: z
-        .string()
-        .describe("ID of the documentation entry"),
-    },
+      "List all groups for the current documentation entry. Use this to discover where to place new pages.",
+    inputSchema: {},
   },
-  async ({ documentationId }) => {
+  async () => {
     const groups = await db
       .select({
         id: documentationPages.id,
@@ -100,7 +102,7 @@ server.registerTool(
       .from(documentationPages)
       .where(
         and(
-          eq(documentationPages.documentationId, documentationId),
+          eq(documentationPages.documentationId, DOCUMENTATION_ID),
           eq(documentationPages.type, "group"),
         ),
       );
@@ -121,26 +123,27 @@ server.registerTool(
   {
     title: "Mark Documentation as Generated",
     description:
-      "Update the documentation entry's isGenerated field to true after all pages have been written.",
+      "Update the current documentation entry to mark it as generated and set its description. Call this after all documentation pages have been written.",
     inputSchema: {
-      documentationId: z
+      description: z
         .string()
-        .describe("ID of the documentation entry"),
+        .describe("A clear, concise description of what this documentation covers and its purpose"),
     },
   },
-  async ({ documentationId }) => {
+  async ({ description }) => {
     await db
       .update(documentations)
-      .set({ isGenerated: true })
-      .where(eq(documentations.id, documentationId));
+      .set({ isGenerated: true, description })
+      .where(eq(documentations.id, DOCUMENTATION_ID));
 
     return {
       content: [
         {
           type: "text" as const,
           text: JSON.stringify({
-            documentationId,
+            documentationId: DOCUMENTATION_ID,
             isGenerated: true,
+            description,
           }),
         },
       ],
