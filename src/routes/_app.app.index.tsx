@@ -6,7 +6,7 @@ import SolarCode2Linear from "~icons/solar/code-2-linear";
 import SolarRocket2Linear from "~icons/solar/rocket-2-linear";
 import { rot } from "#/lib/utils";
 import type { ReactElement } from "react";
-import { getDocumentations } from "#/lib/func/docs.func.ts";
+import { getDocumentations } from "#/lib/func/docs.functions.ts";
 
 const iconMap: Record<string, ReactElement> = {
   onboarding: <SolarRocket2Linear />,

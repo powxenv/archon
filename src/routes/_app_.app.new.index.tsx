@@ -22,7 +22,7 @@ import SolarCode2Linear from "~icons/solar/code-2-linear";
 import SolarDocumentLineDuotone from "~icons/solar/document-line-duotone";
 import SolarRocket2Linear from "~icons/solar/rocket-2-linear";
 import NewForm from "#/components/new-form";
-import { getDocumentationTypes, getRepoBranches } from "#/lib/func/docs.func.ts";
+import { getDocumentationTypes, getRepoBranches } from "#/lib/func/docs.functions.ts";
 
 const iconMap: Record<string, ReactElement> = {
   onboarding: <SolarRocket2Linear className="size-5" />,
@@ -204,9 +204,7 @@ function RouteComponent() {
                     />
                   </InputGroup>
                 </TextField>
-                {urlErrors[index] && (
-                  <p className="text-sm text-danger">{urlErrors[index]}</p>
-                )}
+                {urlErrors[index] && <p className="text-sm text-danger">{urlErrors[index]}</p>}
               </div>
             ) : (
               <div key={index} className="flex flex-col gap-1">
@@ -235,9 +233,7 @@ function RouteComponent() {
                     </InputGroup.Suffix>
                   </InputGroup>
                 </TextField>
-                {urlErrors[index] && (
-                  <p className="text-sm text-danger">{urlErrors[index]}</p>
-                )}
+                {urlErrors[index] && <p className="text-sm text-danger">{urlErrors[index]}</p>}
               </div>
             ),
           )}

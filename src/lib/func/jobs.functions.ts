@@ -1,5 +1,5 @@
 import { createServerFn } from "@tanstack/react-start";
-import { ensureSession } from "./auth.func";
+import { ensureSession } from "./auth.functions";
 import {
   enqueueJob,
   getJob,
