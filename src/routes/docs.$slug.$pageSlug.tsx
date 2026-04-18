@@ -112,7 +112,10 @@ function RouteComponent() {
   const prevPage = currentIndex > 0 ? sortedPages[currentIndex - 1] : null;
   const nextPage = currentIndex < sortedPages.length - 1 ? sortedPages[currentIndex + 1] : null;
 
-  const pageUrl = `${window.location.origin}/docs/${slug}/${page.slug}`;
+  const [pageUrl, setPageUrl] = useState("");
+  useEffect(() => {
+    setPageUrl(`${window.location.origin}/docs/${slug}/${page.slug}`);
+  }, [slug, page.slug]);
 
   return (
     <div className="flex flex-col">
