@@ -32,6 +32,7 @@ import SolarPenNewSquareLinear from "~icons/solar/pen-new-square-linear";
 import {
   getDocumentationForEdit,
   updateDocumentation,
+  regenerateDocumentation,
   getRepoBranches,
 } from "#/lib/func/docs.functions";
 
@@ -71,6 +72,8 @@ function EditDocumentationPage() {
   );
   const [isPublic, setIsPublic] = useState(documentation.isPublic);
   const [togglingPublic, setTogglingPublic] = useState(false);
+  const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
+  const [regenerating, setRegenerating] = useState(false);
 
   const form = useForm<EditValues>({
     resolver: zodResolver(editSchema),
@@ -116,6 +119,20 @@ function EditDocumentationPage() {
       // revert on failure
     } finally {
       setTogglingPublic(false);
+    }
+  };
+
+  const handleRegenerate = async () => {
+    setRegenerating(true);
+    try {
+      await regenerateDocumentation({ data: documentation.id });
+      void navigate({
+        to: "/app/new/$documentationId/status",
+        params: { documentationId: documentation.id },
+      });
+    } catch {
+      setRegenerating(false);
+      setShowRegenerateConfirm(false);
     }
   };
 
@@ -234,8 +251,16 @@ function EditDocumentationPage() {
                         Unpublished changes
                       </span>
                     )}
-                    <Button variant="outline" isDisabled>
-                      <SolarRestartLinear className="size-4" />
+                    <Button
+                      variant="outline"
+                      onPress={() => setShowRegenerateConfirm(true)}
+                      isDisabled={regenerating}
+                    >
+                      {regenerating ? (
+                        <Spinner size="sm" />
+                      ) : (
+                        <SolarRestartLinear className="size-4" />
+                      )}
                       Regenerate
                     </Button>
                   </div>
@@ -249,6 +274,36 @@ function EditDocumentationPage() {
           </div>
         </div>
       </div>
+
+      <Modal>
+        <Modal.Backdrop isOpen={showRegenerateConfirm} onOpenChange={setShowRegenerateConfirm}>
+          <Modal.Container>
+            <Modal.Dialog>
+              <Modal.Header>
+                <Modal.Heading>Regenerate Documentation</Modal.Heading>
+              </Modal.Header>
+              <Modal.Body>
+                <p className="text-sm text-default-500">
+                  This will delete all existing documentation pages and restart the generation
+                  process from scratch. This action cannot be undone.
+                </p>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="outline" onPress={() => setShowRegenerateConfirm(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-danger text-danger-foreground"
+                  onPress={handleRegenerate}
+                  isDisabled={regenerating}
+                >
+                  {regenerating ? <Spinner size="sm" /> : "Regenerate"}
+                </Button>
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
+      </Modal>
     </main>
   );
 }
