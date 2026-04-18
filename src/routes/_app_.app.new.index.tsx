@@ -156,7 +156,7 @@ function RouteComponent() {
         onBack={() => navigate({ to: "/app" })}
       >
         <div className="mt-4 flex flex-col gap-2">
-          <TextField name="doc-name" variant="secondary">
+          <TextField name="doc-name" variant="secondary" aria-label="Documentation name">
             <InputGroup variant="secondary">
               <InputGroup.Input
                 aria-label="Documentation name"
@@ -230,6 +230,7 @@ function RouteComponent() {
                   name={`repo-${index}`}
                   variant="secondary"
                   isInvalid={Boolean(urlErrors[index])}
+                  aria-label="Repository URL"
                 >
                   <InputGroup variant="secondary">
                     <InputGroup.Input
@@ -248,6 +249,7 @@ function RouteComponent() {
                   name={`repo-${index}`}
                   variant="secondary"
                   isInvalid={Boolean(urlErrors[index])}
+                  aria-label={`Repository URL ${index + 1}`}
                 >
                   <InputGroup variant="secondary">
                     <InputGroup.Input

@@ -181,7 +181,7 @@ function EditDocumentationPage() {
               Update your documentation settings and repositories
             </p>
 
-            <form onSubmit={form.handleSubmit(onSave)}>
+            <form onSubmit={form.handleSubmit(onSave)} aria-label="Edit documentation">
               <FieldGroup className="mt-4 flex flex-col gap-3">
                 <Controller
                   name="name"
@@ -292,6 +292,7 @@ function EditDocumentationPage() {
         <Modal.Backdrop isOpen={showRegenerateConfirm} onOpenChange={setShowRegenerateConfirm}>
           <Modal.Container>
             <Modal.Dialog>
+              <Modal.CloseTrigger />
               <Modal.Header>
                 <Modal.Heading>Regenerate Documentation</Modal.Heading>
               </Modal.Header>
@@ -302,7 +303,7 @@ function EditDocumentationPage() {
                     process from scratch. This action cannot be undone.
                   </p>
                 ) : (
-                  <TextField name="regenerate-instructions" variant="secondary">
+                  <TextField name="regenerate-instructions" variant="secondary" aria-label="Custom instructions for regeneration">
                     <Label>Custom Instructions (optional)</Label>
                     <InputGroup variant="secondary">
                       <InputGroup.TextArea
