@@ -1,6 +1,6 @@
 #!/usr/bin/env bun
 import { db } from "../../src/lib/server/db/index.server";
-import { documentationJobs } from "../../src/lib/server/db/schema.server";
+import { documentationJobs, documentations } from "../../src/lib/server/db/schema.server";
 import { eq } from "drizzle-orm";
 import {
   dequeueJob,
@@ -221,7 +221,20 @@ Remember to use the available MCP tools for all documentation creation. When fin
     if (error) {
       await updateJobStatus(job.id, "failed", { errorMessage: error });
     } else {
-      await updateJobStatus(job.id, "completed", { output: markdown });
+      const [doc] = await db
+        .select({ isGenerated: documentations.isGenerated })
+        .from(documentations)
+        .where(eq(documentations.id, job.documentationId))
+        .limit(1);
+
+      if (doc?.isGenerated) {
+        await updateJobStatus(job.id, "completed", { output: markdown });
+      } else {
+        await updateJobStatus(job.id, "failed", {
+          errorMessage:
+            "Generation completed but documentation was not marked as generated. The AI may not have called mark_generated. Please try regenerating.",
+        });
+      }
     }
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : String(error);

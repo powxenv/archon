@@ -3,7 +3,7 @@ import { Button, Description, InputGroup, Label, Modal, Spinner, TextField } fro
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import NewForm from "#/components/new-form";
 import { getLatestJob, cancelDocumentationJob } from "#/lib/func/jobs.functions";
-import { regenerateDocumentation } from "#/lib/func/docs.functions";
+import { regenerateDocumentation, getDocumentationForEdit } from "#/lib/func/docs.functions";
 import type { JobWithMetadata } from "#/lib/server/jobs/index.server";
 
 export const Route = createFileRoute("/_app_/app/new/$documentationId/status")({
@@ -14,6 +14,7 @@ function RouteComponent() {
   const { documentationId } = Route.useParams();
   const navigate = useNavigate();
   const [job, setJob] = useState<JobWithMetadata | null>(null);
+  const [docGenerated, setDocGenerated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
   const [cancelling, setCancelling] = useState(false);
@@ -32,6 +33,15 @@ function RouteComponent() {
     }
   };
 
+  const fetchDocGenerated = async (): Promise<boolean> => {
+    try {
+      const doc = await getDocumentationForEdit({ data: documentationId });
+      return doc?.isGenerated ?? false;
+    } catch {
+      return false;
+    }
+  };
+
   useEffect(() => {
     let cancelled = false;
 
@@ -40,6 +50,13 @@ function RouteComponent() {
         const latestJob = await getLatestJob({ data: documentationId });
         if (cancelled) return;
         setJob(latestJob);
+
+        if (latestJob?.status === "completed") {
+          const generated = await fetchDocGenerated();
+          if (cancelled) return;
+          setDocGenerated(generated);
+        }
+
         setLoading(false);
 
         if (
@@ -68,6 +85,12 @@ function RouteComponent() {
       try {
         const latestJob = await getLatestJob({ data: documentationId });
         setJob(latestJob);
+
+        if (latestJob?.status === "completed") {
+          const generated = await fetchDocGenerated();
+          setDocGenerated(generated);
+        }
+
         setLoading(false);
 
         if (
@@ -110,6 +133,8 @@ function RouteComponent() {
     }
   };
 
+  const isTrulyCompleted = job?.status === "completed" && docGenerated;
+
   const getStatusMessage = () => {
     if (!job) return "Initializing...";
 
@@ -119,7 +144,9 @@ function RouteComponent() {
       case "running":
         return "Generating documentation...";
       case "completed":
-        return "Documentation generated successfully!";
+        return docGenerated
+          ? "Documentation generated successfully!"
+          : "Generation incomplete — documentation was not finalized.";
       case "failed":
         return "Generation failed.";
       case "cancelled":
@@ -159,7 +186,7 @@ function RouteComponent() {
                     {cancelling ? <Spinner size="sm" /> : "Cancel"}
                   </Button>
                 )}
-                {(job?.status === "failed" || job?.status === "cancelled") && (
+                {(job?.status === "failed" || job?.status === "cancelled" || (job?.status === "completed" && !docGenerated)) && (
                   <Button
                     onPress={() => {
                       setRegenerateStep("confirm");
@@ -171,7 +198,7 @@ function RouteComponent() {
                     {regenerating ? <Spinner size="sm" /> : "Regenerate"}
                   </Button>
                 )}
-                {job?.status === "completed" && (
+                {isTrulyCompleted && (
                   <Button onPress={() => navigate({ to: "/app" })}>
                     View Documentation
                   </Button>
