@@ -7,7 +7,7 @@ import { createAuthMiddleware } from "better-auth/api";
 import * as schema from "./db/schema.server";
 
 const ALLOWED_DOMAINS = ["testsprite.com"];
-const ALLOWED_EMAILS = ["bykaelren@gmail.com"];
+const ALLOWED_EMAILS = ["bykaelren@gmail.com", "testsprite@test.com"];
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {

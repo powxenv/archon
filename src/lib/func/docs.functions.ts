@@ -500,6 +500,26 @@ export const updateDocumentation = createServerFn({ method: "POST" })
     return { success: true };
   });
 
+export const deleteDocumentation = createServerFn({ method: "POST" })
+  .inputValidator(z.string())
+  .handler(async ({ data: documentationId }) => {
+    const session = await ensureSession();
+
+    const [existing] = await db
+      .select({ userId: documentationTable.userId })
+      .from(documentationTable)
+      .where(eq(documentationTable.id, documentationId))
+      .limit(1);
+
+    if (!existing || existing.userId !== session.user.id) {
+      throw new Error("Documentation not found");
+    }
+
+    await db.delete(documentationTable).where(eq(documentationTable.id, documentationId));
+
+    return { success: true };
+  });
+
 export const regenerateDocumentation = createServerFn({ method: "POST" })
   .inputValidator(
     z.object({

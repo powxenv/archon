@@ -29,10 +29,12 @@ import SolarTrashBinMinimalistic2Linear from "~icons/solar/trash-bin-minimalisti
 import SolarDisketteLinear from "~icons/solar/diskette-linear";
 import SolarRestartLinear from "~icons/solar/restart-linear";
 import SolarPenNewSquareLinear from "~icons/solar/pen-new-square-linear";
+import SolarTrashBinTrashLinear from "~icons/solar/trash-bin-trash-linear";
 import {
   getDocumentationForEdit,
   updateDocumentation,
   regenerateDocumentation,
+  deleteDocumentation,
   getRepoBranches,
 } from "#/lib/func/docs.functions";
 
@@ -76,6 +78,8 @@ function EditDocumentationPage() {
   const [regenerateStep, setRegenerateStep] = useState<"confirm" | "instructions">("confirm");
   const [regenerating, setRegenerating] = useState(false);
   const [regenerateInstructions, setRegenerateInstructions] = useState("");
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleting, setDeleting] = useState(false);
 
   const form = useForm<EditValues>({
     resolver: zodResolver(editSchema),
@@ -142,6 +146,17 @@ function EditDocumentationPage() {
     } catch {
       setRegenerating(false);
       setShowRegenerateConfirm(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await deleteDocumentation({ data: documentation.id });
+      void navigate({ to: "/app" });
+    } catch {
+      setDeleting(false);
+      setShowDeleteConfirm(false);
     }
   };
 
@@ -276,6 +291,15 @@ function EditDocumentationPage() {
                       )}
                       Regenerate
                     </Button>
+                    <Button
+                      variant="ghost"
+                      className="text-danger hover:bg-danger/10"
+                      onPress={() => setShowDeleteConfirm(true)}
+                      isDisabled={deleting}
+                    >
+                      <SolarTrashBinTrashLinear className="size-4" />
+                      Delete
+                    </Button>
                   </div>
                   <Button type="submit" isDisabled={saving}>
                     {saving ? <Spinner size="sm" /> : <SolarDisketteLinear className="size-4" />}
@@ -338,6 +362,40 @@ function EditDocumentationPage() {
                     {regenerating ? <Spinner size="sm" /> : "Regenerate"}
                   </Button>
                 )}
+              </Modal.Footer>
+            </Modal.Dialog>
+          </Modal.Container>
+        </Modal.Backdrop>
+      </Modal>
+
+      <Modal>
+        <Modal.Backdrop isOpen={showDeleteConfirm} onOpenChange={(open) => !open && setShowDeleteConfirm(false)}>
+          <Modal.Container>
+            <Modal.Dialog className="sm:max-w-[420px]">
+              <Modal.CloseTrigger />
+              <Modal.Header>
+                <Modal.Icon className="bg-danger/10 text-danger">
+                  <SolarTrashBinTrashLinear className="size-5" />
+                </Modal.Icon>
+                <Modal.Heading>Delete Documentation</Modal.Heading>
+              </Modal.Header>
+              <Modal.Body>
+                <p className="text-sm text-default-500">
+                  This action cannot be undone. This will permanently delete the documentation
+                  and all its pages.
+                </p>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button variant="outline" onPress={() => setShowDeleteConfirm(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  className="bg-danger text-danger-foreground"
+                  onPress={handleDelete}
+                  isDisabled={deleting}
+                >
+                  {deleting ? <Spinner size="sm" /> : "Delete"}
+                </Button>
               </Modal.Footer>
             </Modal.Dialog>
           </Modal.Container>

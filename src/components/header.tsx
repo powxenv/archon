@@ -1,9 +1,26 @@
 import { initials } from "#/lib/utils";
-import { Avatar, buttonVariants, cn } from "@heroui/react";
-import { Link, useRouteContext } from "@tanstack/react-router";
+import { authClient } from "#/lib/client/auth";
+import { Avatar, buttonVariants, cn, Dropdown } from "@heroui/react";
+import { Link, useNavigate, useRouteContext } from "@tanstack/react-router";
+import SolarLogout2Linear from "~icons/solar/logout-2-linear";
+import SolarWidget2Linear from "~icons/solar/widget-2-linear";
 
 const Header = () => {
   const { session } = useRouteContext({ from: "__root__" });
+  const navigate = useNavigate();
+
+  const handleSignOut = async () => {
+    await authClient.signOut();
+    void navigate({ to: "/" });
+  };
+
+  const handleMenuAction = (key: string) => {
+    if (key === "dashboard") {
+      void navigate({ to: "/app" });
+    } else if (key === "logout") {
+      void handleSignOut();
+    }
+  };
 
   return (
     <header className="border-b bg-background/60 inset-x-0 fixed top-0 backdrop-blur-2xl z-10">
@@ -20,16 +37,41 @@ const Header = () => {
             Github
           </Link>
           {session ? (
-            <Link
-              to="/app"
-              className={cn(buttonVariants({ variant: "outline", size: "sm" }), "pl-1")}
-            >
-              <Avatar className="size-6 border">
-                <Avatar.Image alt={session.user.name} src={session.user.image || ""} />
-                <Avatar.Fallback>{initials(session.user.name)}</Avatar.Fallback>
-              </Avatar>
-              Open App
-            </Link>
+            <Dropdown>
+              <Dropdown.Trigger>
+                <button
+                  type="button"
+                  className={cn(
+                    buttonVariants({ variant: "outline", size: "sm" }),
+                    "pl-1 cursor-pointer",
+                  )}
+                >
+                  <Avatar className="size-6 border">
+                    <Avatar.Image alt={session.user.name} src={session.user.image || ""} />
+                    <Avatar.Fallback>{initials(session.user.name)}</Avatar.Fallback>
+                  </Avatar>
+                  Open App
+                </button>
+              </Dropdown.Trigger>
+              <Dropdown.Popover>
+                <Dropdown.Menu aria-label="User menu" onAction={(key) => handleMenuAction(String(key))}>
+                  <Dropdown.Section>
+                    <Dropdown.Item id="dashboard" textValue="Dashboard">
+                      <span className="flex items-center gap-2">
+                        <SolarWidget2Linear className="size-4" />
+                        Dashboard
+                      </span>
+                    </Dropdown.Item>
+                    <Dropdown.Item id="logout" textValue="Sign out">
+                      <span className="flex items-center gap-2">
+                        <SolarLogout2Linear className="size-4" />
+                        Sign out
+                      </span>
+                    </Dropdown.Item>
+                  </Dropdown.Section>
+                </Dropdown.Menu>
+              </Dropdown.Popover>
+            </Dropdown>
           ) : (
             <Link to="/auth" className={buttonVariants({ variant: "outline", size: "sm" })}>
               Sign In
