@@ -15,6 +15,7 @@ function RouteComponent() {
   const navigate = useNavigate();
   const [job, setJob] = useState<JobWithMetadata | null>(null);
   const [docGenerated, setDocGenerated] = useState(false);
+  const [docSlug, setDocSlug] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [regenerating, setRegenerating] = useState(false);
   const [cancelling, setCancelling] = useState(false);
@@ -33,12 +34,15 @@ function RouteComponent() {
     }
   };
 
-  const fetchDocGenerated = async (): Promise<boolean> => {
+  const fetchDocInfo = async (): Promise<{ isGenerated: boolean; slug: string | null }> => {
     try {
       const doc = await getDocumentationForEdit({ data: documentationId });
-      return doc?.isGenerated ?? false;
+      return {
+        isGenerated: doc?.isGenerated ?? false,
+        slug: doc?.slug ?? null,
+      };
     } catch {
-      return false;
+      return { isGenerated: false, slug: null };
     }
   };
 
@@ -52,9 +56,10 @@ function RouteComponent() {
         setJob(latestJob);
 
         if (latestJob?.status === "completed") {
-          const generated = await fetchDocGenerated();
+          const docInfo = await fetchDocInfo();
           if (cancelled) return;
-          setDocGenerated(generated);
+          setDocGenerated(docInfo.isGenerated);
+          setDocSlug(docInfo.slug);
         }
 
         setLoading(false);
@@ -87,8 +92,9 @@ function RouteComponent() {
         setJob(latestJob);
 
         if (latestJob?.status === "completed") {
-          const generated = await fetchDocGenerated();
-          setDocGenerated(generated);
+          const docInfo = await fetchDocInfo();
+          setDocGenerated(docInfo.isGenerated);
+          setDocSlug(docInfo.slug);
         }
 
         setLoading(false);
@@ -199,8 +205,8 @@ function RouteComponent() {
                     {regenerating ? <Spinner size="sm" /> : "Regenerate"}
                   </Button>
                 )}
-                {isTrulyCompleted && (
-                  <Button onPress={() => navigate({ to: "/app" })}>
+                {isTrulyCompleted && docSlug && (
+                  <Button onPress={() => navigate({ to: "/docs/$slug", params: { slug: docSlug } })}>
                     View Documentation
                   </Button>
                 )}

@@ -9,7 +9,12 @@ import {
   Modal,
   TextField,
 } from "@heroui/react";
-import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  notFound,
+  redirect,
+} from "@tanstack/react-router";
 import { getDocumentationPageBySlug } from "#/lib/func/docs.functions";
 import SolarPenNewSquareLinear from "~icons/solar/pen-new-square-linear";
 import SolarChatRoundDotsLinear from "~icons/solar/chat-round-dots-linear";
@@ -56,8 +61,7 @@ export const Route = createFileRoute("/docs/$slug/$pageSlug")({
     const docName = loaderData.documentation.name;
     const pageTitle = loaderData.page.title;
     const description =
-      loaderData.documentation.description ??
-      `Documentation for ${docName}`;
+      loaderData.documentation.description ?? `Documentation for ${docName}`;
     const title = `${pageTitle} — ${docName}`;
     const url = `https://archon.noval.me/docs/${loaderData.documentation.slug}/${loaderData.page.slug}`;
 
@@ -69,7 +73,10 @@ export const Route = createFileRoute("/docs/$slug/$pageSlug")({
         { property: "og:description", content: description.slice(0, 200) },
         { property: "og:type", content: "article" },
         { property: "og:url", content: url },
-        { property: "og:image", content: "https://archon.noval.me/logo512.png" },
+        {
+          property: "og:image",
+          content: "https://archon.noval.me/logo512.png",
+        },
         { name: "twitter:card", content: "summary" },
         { name: "twitter:title", content: title },
         { name: "twitter:description", content: description.slice(0, 200) },
@@ -93,10 +100,27 @@ function RouteComponent() {
   useEffect(() => {
     if (contentRef.current) {
       contentRef.current.scrollTo({ top: 0, behavior: "smooth" });
-
-      mermaid.initialize({ startOnLoad: false, theme: "default", suppressErrorRendering: true });
-      void mermaid.run({ querySelector: ".mermaid" });
     }
+
+    const renderMermaid = async () => {
+      try {
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: "default",
+          suppressErrorRendering: true,
+        });
+
+        await mermaid.run({
+          querySelector: ".mermaid",
+          suppressErrors: true,
+        });
+      } catch {
+        // Silently ignore mermaid rendering errors
+      }
+    };
+
+    const timer = setTimeout(renderMermaid, 100);
+    return () => clearTimeout(timer);
   }, [page.id]);
 
   const rootPages = pages.filter((p) => p.type === "page" && !p.parentId);
@@ -107,7 +131,10 @@ function RouteComponent() {
     .sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
   const currentIndex = sortedPages.findIndex((p) => p.id === page.id);
   const prevPage = currentIndex > 0 ? sortedPages[currentIndex - 1] : null;
-  const nextPage = currentIndex < sortedPages.length - 1 ? sortedPages[currentIndex + 1] : null;
+  const nextPage =
+    currentIndex < sortedPages.length - 1
+      ? sortedPages[currentIndex + 1]
+      : null;
 
   const [pageUrl, setPageUrl] = useState("");
   useEffect(() => {
@@ -150,7 +177,9 @@ function RouteComponent() {
                     pageSlug: rootPage.slug,
                   }}
                   className={cn(
-                    buttonVariants({ variant: page.id === rootPage.id ? "tertiary" : "ghost" }),
+                    buttonVariants({
+                      variant: page.id === rootPage.id ? "tertiary" : "ghost",
+                    }),
                     "justify-start w-full truncate",
                   )}
                 >
@@ -180,7 +209,8 @@ function RouteComponent() {
                       }}
                       className={cn(
                         buttonVariants({
-                          variant: page.id === groupPage.id ? "tertiary" : "ghost",
+                          variant:
+                            page.id === groupPage.id ? "tertiary" : "ghost",
                         }),
                         "justify-start w-full truncate",
                       )}
@@ -193,7 +223,10 @@ function RouteComponent() {
             );
           })}
         </aside>
-        <div ref={contentRef} className="h-full overflow-y-auto w-full py-10 pr-12 pl-10">
+        <div
+          ref={contentRef}
+          className="h-full overflow-y-auto w-full py-10 pr-12 pl-10"
+        >
           <MarkdownContent html={page.contentHtml} />
           <div className="mt-12 pt-8 border-t flex justify-between gap-4">
             {prevPage ? (
@@ -242,7 +275,13 @@ function CopyField({ label, value }: { label: string; value: string }) {
   }, [value]);
 
   return (
-    <TextField className="w-full" name={label} defaultValue={value} isReadOnly variant="secondary">
+    <TextField
+      className="w-full"
+      name={label}
+      defaultValue={value}
+      isReadOnly
+      variant="secondary"
+    >
       <Label>{label}</Label>
       <InputGroup>
         <InputGroup.Input className="w-full font-mono text-xs" />
@@ -288,7 +327,8 @@ function AddToAgentButton({ slug }: { slug: string }) {
             </Modal.Header>
             <Modal.Body className="flex flex-col gap-4">
               <p className="text-sm text-muted-foreground">
-                Install this documentation as an agent skill using one of the commands below.
+                Install this documentation as an agent skill using one of the
+                commands below.
               </p>
               <CopyField
                 label="flins"
@@ -309,7 +349,10 @@ function AddToAgentButton({ slug }: { slug: string }) {
 function AskAiDropdown({ pageUrl }: { pageUrl: string }) {
   const createSearchUrl = (baseUrl: string, queryKey: string) => {
     const url = new URL(baseUrl);
-    url.searchParams.set(queryKey, `Read ${pageUrl} and answer questions about it.`);
+    url.searchParams.set(
+      queryKey,
+      `Read ${pageUrl} and answer questions about it.`,
+    );
     return url.toString();
   };
 
@@ -334,7 +377,10 @@ function AskAiDropdown({ pageUrl }: { pageUrl: string }) {
         <SolarAltArrowDownLinear className="size-3" />
       </Button>
       <Dropdown.Popover>
-        <Dropdown.Menu aria-label="Ask AI" onAction={(key) => handleAction(String(key))}>
+        <Dropdown.Menu
+          aria-label="Ask AI"
+          onAction={(key) => handleAction(String(key))}
+        >
           <Dropdown.Section>
             <Header>Ask about this page</Header>
             <Dropdown.Item id="chatgpt" textValue="Ask ChatGPT">

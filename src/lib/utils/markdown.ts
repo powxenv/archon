@@ -19,8 +19,7 @@ marked.use({
   renderer: {
     code: function ({ text: code, lang }) {
       if (lang === "mermaid") {
-        const escaped = escapeHtml(code);
-        return `<pre class="mermaid">${escaped}</pre>`;
+        return `<pre class="mermaid">${code}</pre>`;
       }
 
       if (lang && hljs.getLanguage(lang)) {
