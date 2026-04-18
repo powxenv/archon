@@ -20,7 +20,9 @@ import { Route as AppAppIndexRouteImport } from './routes/_app.app.index'
 import { Route as DocsSlugPageSlugRouteImport } from './routes/docs.$slug.$pageSlug'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AppAppDocumentationIdRouteImport } from './routes/_app_.app.$documentationId'
+import { Route as DotwellKnownAgentSkillsIndexDotjsonRouteImport } from './routes/[.]well-known.agent-skills.index[.]json'
 import { Route as AppAppNewIndexRouteImport } from './routes/_app_.app.new.index'
+import { Route as DotwellKnownAgentSkillsSkillNameSKILLDotmdRouteImport } from './routes/[.]well-known.agent-skills.$skillName.SKILL[.]md'
 import { Route as AppAppNewDocumentationIdStatusRouteImport } from './routes/_app_.app.new.$documentationId.status'
 
 const AuthRoute = AuthRouteImport.update({
@@ -77,11 +79,23 @@ const AppAppDocumentationIdRoute = AppAppDocumentationIdRouteImport.update({
   path: '/$documentationId',
   getParentRoute: () => AppAppRoute,
 } as any)
+const DotwellKnownAgentSkillsIndexDotjsonRoute =
+  DotwellKnownAgentSkillsIndexDotjsonRouteImport.update({
+    id: '/.well-known/agent-skills/index.json',
+    path: '/.well-known/agent-skills/index.json',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AppAppNewIndexRoute = AppAppNewIndexRouteImport.update({
   id: '/new/',
   path: '/new/',
   getParentRoute: () => AppAppRoute,
 } as any)
+const DotwellKnownAgentSkillsSkillNameSKILLDotmdRoute =
+  DotwellKnownAgentSkillsSkillNameSKILLDotmdRouteImport.update({
+    id: '/.well-known/agent-skills/$skillName/SKILL.md',
+    path: '/.well-known/agent-skills/$skillName/SKILL.md',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const AppAppNewDocumentationIdStatusRoute =
   AppAppNewDocumentationIdStatusRouteImport.update({
     id: '/new/$documentationId/status',
@@ -94,12 +108,14 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRouteWithChildren
   '/app': typeof AppAppRouteWithChildren
   '/auth/': typeof AuthIndexRoute
+  '/.well-known/agent-skills/index.json': typeof DotwellKnownAgentSkillsIndexDotjsonRoute
   '/app/$documentationId': typeof AppAppDocumentationIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/docs/$slug/$pageSlug': typeof DocsSlugPageSlugRoute
   '/app/': typeof AppAppIndexRoute
   '/auth/error/': typeof AuthErrorIndexRoute
   '/docs/$slug/': typeof DocsSlugIndexRoute
+  '/.well-known/agent-skills/$skillName/SKILL.md': typeof DotwellKnownAgentSkillsSkillNameSKILLDotmdRoute
   '/app/new/': typeof AppAppNewIndexRoute
   '/app/new/$documentationId/status': typeof AppAppNewDocumentationIdStatusRoute
 }
@@ -107,11 +123,13 @@ export interface FileRoutesByTo {
   '/app': typeof AppAppIndexRoute
   '/': typeof AppIndexRoute
   '/auth': typeof AuthIndexRoute
+  '/.well-known/agent-skills/index.json': typeof DotwellKnownAgentSkillsIndexDotjsonRoute
   '/app/$documentationId': typeof AppAppDocumentationIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/docs/$slug/$pageSlug': typeof DocsSlugPageSlugRoute
   '/auth/error': typeof AuthErrorIndexRoute
   '/docs/$slug': typeof DocsSlugIndexRoute
+  '/.well-known/agent-skills/$skillName/SKILL.md': typeof DotwellKnownAgentSkillsSkillNameSKILLDotmdRoute
   '/app/new': typeof AppAppNewIndexRoute
   '/app/new/$documentationId/status': typeof AppAppNewDocumentationIdStatusRoute
 }
@@ -122,12 +140,14 @@ export interface FileRoutesById {
   '/_app_/app': typeof AppAppRouteWithChildren
   '/_app/': typeof AppIndexRoute
   '/auth/': typeof AuthIndexRoute
+  '/.well-known/agent-skills/index.json': typeof DotwellKnownAgentSkillsIndexDotjsonRoute
   '/_app_/app/$documentationId': typeof AppAppDocumentationIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/docs/$slug/$pageSlug': typeof DocsSlugPageSlugRoute
   '/_app/app/': typeof AppAppIndexRoute
   '/auth/error/': typeof AuthErrorIndexRoute
   '/docs/$slug/': typeof DocsSlugIndexRoute
+  '/.well-known/agent-skills/$skillName/SKILL.md': typeof DotwellKnownAgentSkillsSkillNameSKILLDotmdRoute
   '/_app_/app/new/': typeof AppAppNewIndexRoute
   '/_app_/app/new/$documentationId/status': typeof AppAppNewDocumentationIdStatusRoute
 }
@@ -138,12 +158,14 @@ export interface FileRouteTypes {
     | '/auth'
     | '/app'
     | '/auth/'
+    | '/.well-known/agent-skills/index.json'
     | '/app/$documentationId'
     | '/api/auth/$'
     | '/docs/$slug/$pageSlug'
     | '/app/'
     | '/auth/error/'
     | '/docs/$slug/'
+    | '/.well-known/agent-skills/$skillName/SKILL.md'
     | '/app/new/'
     | '/app/new/$documentationId/status'
   fileRoutesByTo: FileRoutesByTo
@@ -151,11 +173,13 @@ export interface FileRouteTypes {
     | '/app'
     | '/'
     | '/auth'
+    | '/.well-known/agent-skills/index.json'
     | '/app/$documentationId'
     | '/api/auth/$'
     | '/docs/$slug/$pageSlug'
     | '/auth/error'
     | '/docs/$slug'
+    | '/.well-known/agent-skills/$skillName/SKILL.md'
     | '/app/new'
     | '/app/new/$documentationId/status'
   id:
@@ -165,12 +189,14 @@ export interface FileRouteTypes {
     | '/_app_/app'
     | '/_app/'
     | '/auth/'
+    | '/.well-known/agent-skills/index.json'
     | '/_app_/app/$documentationId'
     | '/api/auth/$'
     | '/docs/$slug/$pageSlug'
     | '/_app/app/'
     | '/auth/error/'
     | '/docs/$slug/'
+    | '/.well-known/agent-skills/$skillName/SKILL.md'
     | '/_app_/app/new/'
     | '/_app_/app/new/$documentationId/status'
   fileRoutesById: FileRoutesById
@@ -179,9 +205,11 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRouteWithChildren
   AppAppRoute: typeof AppAppRouteWithChildren
+  DotwellKnownAgentSkillsIndexDotjsonRoute: typeof DotwellKnownAgentSkillsIndexDotjsonRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
   DocsSlugPageSlugRoute: typeof DocsSlugPageSlugRoute
   DocsSlugIndexRoute: typeof DocsSlugIndexRoute
+  DotwellKnownAgentSkillsSkillNameSKILLDotmdRoute: typeof DotwellKnownAgentSkillsSkillNameSKILLDotmdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -263,12 +291,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAppDocumentationIdRouteImport
       parentRoute: typeof AppAppRoute
     }
+    '/.well-known/agent-skills/index.json': {
+      id: '/.well-known/agent-skills/index.json'
+      path: '/.well-known/agent-skills/index.json'
+      fullPath: '/.well-known/agent-skills/index.json'
+      preLoaderRoute: typeof DotwellKnownAgentSkillsIndexDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_app_/app/new/': {
       id: '/_app_/app/new/'
       path: '/new'
       fullPath: '/app/new/'
       preLoaderRoute: typeof AppAppNewIndexRouteImport
       parentRoute: typeof AppAppRoute
+    }
+    '/.well-known/agent-skills/$skillName/SKILL.md': {
+      id: '/.well-known/agent-skills/$skillName/SKILL.md'
+      path: '/.well-known/agent-skills/$skillName/SKILL.md'
+      fullPath: '/.well-known/agent-skills/$skillName/SKILL.md'
+      preLoaderRoute: typeof DotwellKnownAgentSkillsSkillNameSKILLDotmdRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_app_/app/new/$documentationId/status': {
       id: '/_app_/app/new/$documentationId/status'
@@ -323,9 +365,13 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRouteWithChildren,
   AppAppRoute: AppAppRouteWithChildren,
+  DotwellKnownAgentSkillsIndexDotjsonRoute:
+    DotwellKnownAgentSkillsIndexDotjsonRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
   DocsSlugPageSlugRoute: DocsSlugPageSlugRoute,
   DocsSlugIndexRoute: DocsSlugIndexRoute,
+  DotwellKnownAgentSkillsSkillNameSKILLDotmdRoute:
+    DotwellKnownAgentSkillsSkillNameSKILLDotmdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
