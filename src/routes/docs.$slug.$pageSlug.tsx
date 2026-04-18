@@ -1,11 +1,24 @@
-import { Button, buttonVariants, cn, Dropdown, Header, Label } from "@heroui/react";
+import {
+  Button,
+  buttonVariants,
+  cn,
+  Dropdown,
+  Header,
+  InputGroup,
+  Label,
+  Modal,
+  TextField,
+} from "@heroui/react";
 import { createFileRoute, Link, notFound, redirect } from "@tanstack/react-router";
 import { getDocumentationPageBySlug } from "#/lib/func/docs.functions";
 import SolarPenNewSquareLinear from "~icons/solar/pen-new-square-linear";
 import SolarChatRoundDotsLinear from "~icons/solar/chat-round-dots-linear";
 import SolarAltArrowDownLinear from "~icons/solar/alt-arrow-down-linear";
+import SolarRocket2Linear from "~icons/solar/rocket-2-linear";
+import SolarCopyLinear from "~icons/solar/copy-linear";
+import SolarCheckReadLinear from "~icons/solar/check-read-linear";
 import { MarkdownContent } from "#/components/markdown-content";
-import { Fragment, useEffect, useRef } from "react";
+import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import mermaid from "mermaid";
 import hljs from "highlight.js";
 import "highlight.js/styles/github.min.css";
@@ -76,6 +89,7 @@ function RouteComponent() {
         </Link>
         <nav className="flex gap-2 items-center">
           <AskAiDropdown pageUrl={pageUrl} />
+          <AddToAgentButton slug={slug} />
 
           {documentation.isOwner && (
             <Link
@@ -180,6 +194,81 @@ function RouteComponent() {
         </div>
       </div>
     </div>
+  );
+}
+
+function CopyField({ label, value }: { label: string; value: string }) {
+  const [copied, setCopied] = useState(false);
+
+  const handleCopy = useCallback(() => {
+    void navigator.clipboard.writeText(value).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  }, [value]);
+
+  return (
+    <TextField className="w-full" name={label} defaultValue={value} isReadOnly variant="secondary">
+      <Label>{label}</Label>
+      <InputGroup>
+        <InputGroup.Input className="w-full font-mono text-xs" />
+        <InputGroup.Suffix className="pr-0">
+          <Button
+            isIconOnly
+            aria-label={copied ? "Copied" : "Copy"}
+            size="sm"
+            variant="ghost"
+            onPress={handleCopy}
+          >
+            {copied ? (
+              <SolarCheckReadLinear className="size-4" />
+            ) : (
+              <SolarCopyLinear className="size-4" />
+            )}
+          </Button>
+        </InputGroup.Suffix>
+      </InputGroup>
+    </TextField>
+  );
+}
+
+function AddToAgentButton({ slug }: { slug: string }) {
+  const skillName = `archon-docs-${slug}`;
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
+
+  return (
+    <Modal>
+      <Button variant="outline" size="sm">
+        <SolarRocket2Linear className="size-4" />
+        Add to AI Agent
+      </Button>
+      <Modal.Backdrop>
+        <Modal.Container>
+          <Modal.Dialog className="sm:max-w-[420px]">
+            <Modal.CloseTrigger />
+            <Modal.Header>
+              <Modal.Icon className="bg-default text-foreground">
+                <SolarRocket2Linear className="size-5" />
+              </Modal.Icon>
+              <Modal.Heading>Add to AI Agent</Modal.Heading>
+            </Modal.Header>
+            <Modal.Body className="flex flex-col gap-4">
+              <p className="text-sm text-muted-foreground">
+                Install this documentation as an agent skill using one of the commands below.
+              </p>
+              <CopyField
+                label="flins"
+                value={`npx flins@latest add archon.noval.me --skill ${skillName}`}
+              />
+              <CopyField
+                label="skills.sh"
+                value={`npx skills@latest add ${origin} --skill ${skillName}`}
+              />
+            </Modal.Body>
+          </Modal.Dialog>
+        </Modal.Container>
+      </Modal.Backdrop>
+    </Modal>
   );
 }
 
