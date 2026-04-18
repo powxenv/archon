@@ -189,7 +189,8 @@ function RouteComponent() {
                 {(job?.status === "failed" || job?.status === "cancelled" || (job?.status === "completed" && !docGenerated)) && (
                   <Button
                     onPress={() => {
-                      setRegenerateStep("confirm");
+                      const skipConfirm = job?.status !== "completed";
+                      setRegenerateStep(skipConfirm ? "instructions" : "confirm");
                       setRegenerateInstructions("");
                       setShowRegenerateConfirm(true);
                     }}
