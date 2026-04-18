@@ -33,13 +33,13 @@ async def run_test():
         # -> Navigate to http://localhost:7162
         await page.goto("http://localhost:7162")
         
-        # -> Click the 'Sign In' control to open the authentication page.
+        # -> Open the authentication page by clicking the 'Sign In' link.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/header/div/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the email and password fields with the provided credentials and submit the sign-in form.
+        # -> Fill the Email and Password fields and click the Sign In button to authenticate as testsprite@test.com.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -55,7 +55,39 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the email and password fields and submit the sign-in form again to authenticate.
+        # -> Fill the Email and Password fields and click the Sign In button to authenticate as testsprite@test.com.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('testsprite@test.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[2]/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Fill Email and Password fields and click the 'Sign In' button to authenticate as testsprite@test.com.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('testsprite@test.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[2]/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Fill the Email and Password fields with the provided credentials and click the Sign In button to authenticate.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -73,7 +105,7 @@ async def run_test():
         
         # --> Assertions to verify final state
         frame = context.pages[-1]
-        assert await frame.locator("xpath=//*[contains(., 'Cancelled')]").nth(0).is_visible(), "The status page should display Cancelled to indicate the generation reached a cancelled terminal state after cancelling."
+        assert await frame.locator("xpath=//*[contains(., 'Cancelled')]").nth(0).is_visible(), "The generation status should show a cancelled terminal state after cancelling the running generation."]}
         await asyncio.sleep(5)
 
     finally:

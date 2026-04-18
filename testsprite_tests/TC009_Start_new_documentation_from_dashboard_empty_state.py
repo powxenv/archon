@@ -33,13 +33,13 @@ async def run_test():
         # -> Navigate to http://localhost:7162
         await page.goto("http://localhost:7162")
         
-        # -> Click the 'Sign In' button to open the authentication form.
+        # -> Click the 'Sign In' button to open the authentication page/form.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/header/div/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the Email and Password fields and submit the sign-in form by clicking the Sign In button.
+        # -> Fill in the email and password fields and submit the Sign In form to authenticate the test user.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -55,24 +55,61 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the Email field with testsprite@test.com and submit the sign-in form by clicking the Sign In button.
+        # -> Fill the email and password fields and submit the Sign In form to authenticate the user.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
         await asyncio.sleep(3); await elem.fill('testsprite@test.com')
         
         frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[2]/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
+        
+        frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'New Documentation' empty-state CTA to start the creation wizard (this may prompt sign-in).
+        # -> Fill the email and password fields with the provided credentials and submit the Sign In form.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('testsprite@test.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[2]/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
+        
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/main/div/div/div/div/a').nth(0)
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'New Documentation' empty-state CTA (element index 2251) to start the creation wizard.
+        # -> Click the 'Sign In' button to submit credentials and wait for the dashboard/empty-state to appear.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Fill the email and password fields with the provided credentials and submit the Sign In form. Then wait for the dashboard/empty-state CTA to appear so we can start the creation wizard.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('testsprite@test.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[2]/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the dashboard empty-state CTA (New Documentation) to start the creation wizard and observe whether the wizard appears.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div/a').nth(0)

@@ -33,13 +33,13 @@ async def run_test():
         # -> Navigate to http://localhost:7162
         await page.goto("http://localhost:7162")
         
-        # -> Click the 'Sign In' link to open the authentication page.
+        # -> Open the Sign In / auth page by clicking the 'Sign In' link.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/header/div/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill in the email and password fields with the provided credentials and submit the sign-in form.
+        # -> Fill the email and password fields and submit the Sign In form.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -55,13 +55,7 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the Sign In button to submit the credentials and wait for the app to confirm authentication (dashboard or user menu).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Fill the email and password fields with the provided credentials and click the Sign In button to authenticate (then wait for redirect to dashboard/user menu).
+        # -> Submit the sign-in form by filling email and password and clicking 'Sign In'.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -77,22 +71,65 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Navigate directly to the authentication page (/auth) so we can sign in using the provided credentials and avoid the previous click loop.
-        await page.goto("http://localhost:7162/auth")
+        # -> Submit the sign-in form by entering the provided credentials and clicking the 'Sign In' button.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('testsprite@test.com')
         
-        # -> Click the 'Open App' button to open the application entry and proceed to sign-in/dashboard flow.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[2]/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the 'Sign In' button to submit the credentials and sign in, then verify the dashboard loads and open project settings.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Open the app/dashboard so we can locate an existing documentation project (click the 'Open App' button).
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/header/div/nav/button/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the user menu button to reveal the Dashboard link so we can open the Dashboard listing.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/header/div/nav/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Open the Dashboard from the user menu so we can access the documentation project and its settings.
+        # -> Click the user menu button to reveal the Dashboard link so we can open the Dashboard listing and access a project's settings.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/header/div/nav/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the Dashboard menu item to open the dashboard listing so we can locate a documentation project to edit the visibility.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/div[4]/div/div[2]/section/div').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Open App' button to go to the dashboard so I can open a documentation project's settings.
+        # -> Open the user menu to reveal the Dashboard link so we can navigate to the dashboard listing and access a project's settings.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/header/div/nav/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the user menu (Open App / profile button) to reveal the Dashboard link so the dashboard listing can be opened.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/header/div/nav/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the user menu button to reveal the Dashboard link so the dashboard listing can be opened.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/header/div/nav/button').nth(0)

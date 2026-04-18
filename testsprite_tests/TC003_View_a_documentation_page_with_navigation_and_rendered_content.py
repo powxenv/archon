@@ -33,19 +33,16 @@ async def run_test():
         # -> Navigate to http://localhost:7162
         await page.goto("http://localhost:7162")
         
-        # -> Click the 'Get Started' call-to-action to open a sample/published documentation page, then verify the documentation sidebar and rendered page content (rich formatting).
+        # -> Click the 'Get Started' call-to-action to open a sample or published documentation page.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/section/div/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Navigate to /docs to verify whether the documentation is publicly accessible. If it redirects to auth again, conclude that published docs require authentication and finish the test.
-        await page.goto("http://localhost:7162/docs")
-        
         # --> Assertions to verify final state
         frame = context.pages[-1]
-        assert await frame.locator("xpath=//*[contains(., 'Contents')]").nth(0).is_visible(), "The documentation sidebar should show a hierarchical list of pages and groups after opening the published documentation page.",
-        assert await frame.locator("xpath=//*[contains(., 'npm install')]").nth(0).is_visible(), "The selected documentation page should render code examples such as npm install to indicate rich formatting is present.",
+        assert await frame.locator("xpath=//*[contains(., 'Contents')]").nth(0).is_visible(), "The documentation sidebar should display a hierarchical list of pages and groups after opening the published documentation page"
+        assert await frame.locator("xpath=//*[contains(., 'Example')]").nth(0).is_visible(), "The selected documentation page should render content with rich formatting such as code highlighting or diagrams when present"
         await asyncio.sleep(5)
 
     finally:

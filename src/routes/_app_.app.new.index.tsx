@@ -167,7 +167,7 @@ function RouteComponent() {
             </InputGroup>
           </TextField>
           <div className="flex justify-end">
-            <Button onPress={() => setStep("type")} isDisabled={!name.trim()}>
+            <Button onPress={() => setStep("type")} isDisabled={!name.trim()} aria-label="Next step">
               Next
             </Button>
           </div>
@@ -206,7 +206,7 @@ function RouteComponent() {
             ))}
           </RadioGroup>
           <div className="flex justify-end">
-            <Button onPress={() => setStep("repos")} isDisabled={!selectedType}>
+            <Button onPress={() => setStep("repos")} isDisabled={!selectedType} aria-label="Next step">
               Next
             </Button>
           </div>
@@ -276,15 +276,16 @@ function RouteComponent() {
             ),
           )}
           <div className="flex items-center justify-between flex-wrap">
-            <Button variant="outline" onPress={addUrl}>
+            <Button variant="outline" onPress={addUrl} aria-label="Add more repositories">
               <SolarAddCircleLinear className="size-4" />
               Add More
             </Button>
             <Button
               onPress={fetchBranchesAndContinue}
               isDisabled={!allReposFilled || hasUrlErrors || branchesLoading}
+              aria-label="Next step - fetch branches"
             >
-              {branchesLoading ? <Spinner className="text-white" /> : "Next"}
+              {branchesLoading ? <Spinner className="text-white" aria-label="Loading branches" /> : "Next"}
             </Button>
           </div>
         </div>
@@ -314,7 +315,7 @@ function RouteComponent() {
             );
           })}
           <div className="flex justify-end">
-            <Button onPress={() => setStep("instructions")} isDisabled={!allBranchesSelected}>
+            <Button onPress={() => setStep("instructions")} isDisabled={!allBranchesSelected} aria-label="Next step">
               Next
             </Button>
           </div>
@@ -347,8 +348,8 @@ function RouteComponent() {
           </Description>
         </TextField>
         <div className="flex justify-end">
-          <Button onPress={handleSubmit} isDisabled={isSubmitting}>
-            {isSubmitting ? <Spinner className="text-white" /> : "Create Documentation"}
+          <Button onPress={handleSubmit} isDisabled={isSubmitting} aria-label="Create Documentation">
+            {isSubmitting ? <Spinner className="text-white" aria-label="Creating documentation" /> : "Create Documentation"}
           </Button>
         </div>
       </div>

@@ -33,13 +33,13 @@ async def run_test():
         # -> Navigate to http://localhost:7162
         await page.goto("http://localhost:7162")
         
-        # -> Click the 'Get Started' call-to-action to open the sample/published documentation.
+        # -> Click the call-to-action link to view a sample or published documentation page.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/section/div/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the sign-in form with provided credentials and submit (sign in). After successful login, open the sample/published documentation and select two different pages from the sidebar to verify the viewer updates.
+        # -> Fill the Email and Password fields and click 'Sign In' to authenticate so we can access the documentation viewer and sidebar.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -55,7 +55,7 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the email and password fields and submit the Sign In form to authenticate.
+        # -> Fill the Email and Password fields and click 'Sign In' to authenticate so we can access the documentation viewer.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -71,85 +71,26 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'New Documentation' CTA (or the equivalent call-to-action) to open the sample/published documentation (this may trigger sign-in if required).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div/div/div/div/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Fill the documentation name input and submit the form (via Enter) to continue the 'create documentation' flow and reach the viewer where the sidebar can be used.
+        # -> Fill the Email and Password fields with the provided credentials and click the 'Sign In' button to authenticate.
         frame = context.pages[-1]
         # Input text
-        elem = frame.locator('xpath=/html/body/main/div[2]/div[5]/div/div[3]/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('Test Documentation for Sidebar Test')
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('testsprite@test.com')
         
-        # -> Click the 'Next' button to continue the documentation creation flow and reach the documentation viewer where the sidebar is available.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[2]/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
+        
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/main/div[2]/div[5]/div/div[3]/div[2]/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Select a documentation type option so the Next button becomes enabled (choose Developer Reference).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div[2]/div[5]/div/div[3]/div/label[2]').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Next' button to proceed into the documentation viewer so the sidebar is available for page selection.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div[2]/div[5]/div/div[3]/div[2]/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the Back button to return to the previous step so I can try advancing to the documentation viewer from there.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div[2]/div[5]/div/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Return to the app landing/homepage to locate the call-to-action that opens a sample or published documentation (try a fresh navigation to /).
-        await page.goto("http://localhost:7162/")
-        
-        # -> Click the 'Get Started' call-to-action to open the sample/published documentation (or trigger the sign-in flow if required).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div/section/div/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Get Started' CTA on the homepage to open the sample/published documentation (this may trigger sign-in).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div/section/div/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Get Started' call-to-action on the homepage to attempt to open a sample/published documentation (if sign-in is required, sign in with the provided credentials next).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div/section/div/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Get Started' CTA on the homepage (index 9378) to open the sample/published documentation (this may trigger sign-in).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div/section/div/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Get Started' CTA on the homepage to open the sample/published documentation (this may trigger sign-in).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div/section/div/a').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Get Started' CTA on the homepage to open the sample/published documentation (this may trigger sign-in).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div/section/div/a').nth(0)
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
         # --> Assertions to verify final state
         frame = context.pages[-1]
-        assert await frame.locator("xpath=//*[contains(., 'Test Documentation for Sidebar Test')]").nth(0).is_visible(), "The viewer should display the content for the most recently selected page.",
-        assert await frame.locator("xpath=//*[contains(., 'Developer Reference')]").nth(0).is_visible(), "The sidebar should remain visible for continued navigation.",
+        assert await frame.locator("xpath=//*[contains(., 'Introduction')]").nth(0).is_visible(), "The viewer should display the content for the most recently selected page after selecting it from the sidebar."
+        assert await frame.locator("xpath=//*[contains(., 'Contents')]").nth(0).is_visible(), "The sidebar should remain visible for continued navigation after selecting pages."]}
         await asyncio.sleep(5)
 
     finally:

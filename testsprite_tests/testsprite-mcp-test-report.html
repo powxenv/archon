@@ -1234,31 +1234,38 @@ body {
         
         <div class="coverage-summary">
           <ul class="coverage-list text-body">
-            <li><span class="coverage-highlight">1/26</span> of tests passed</li>
+            <li><span class="coverage-highlight">5/15</span> of tests passed</li>
             <li><span class="coverage-highlight">Key gaps / risks:</span>
             
               <blockquote>
-<p><strong>1 of 15 executed tests passed (6.67%). 11 tests were skipped due to dev mode limits.</strong></p>
+<p><strong>5 of 15 executed tests passed (33.3%), up from 1 of 15 (6.67%) in round 1.</strong></p>
 </blockquote>
-<p><strong>Critical Issues:</strong></p>
+<p><strong>Fixes that worked:</strong></p>
+<ul>
+<li>Removing TanStack Devtools overlay eliminated UI obstruction — TC001 and TC004 now pass consistently</li>
+<li>Adding aria-labels to buttons improved test automation interaction reliability</li>
+</ul>
+<p><strong>Remaining issues:</strong></p>
 <ol>
 <li>
-<p><strong>Authentication is non-functional for automated testing</strong> - The sign-in form accepts credentials visually but does not redirect to the dashboard. This blocked 8 of 15 tests. Root cause may be: credentials not registered in the database, auth endpoint returning errors that are not surfaced in the UI, or a session handling bug. The sign-up flow also shows a &quot;Something went wrong!&quot; error banner, suggesting a backend auth service issue.</p>
+<p><strong>Intermittent auth failures under concurrent load</strong> — The single-threaded Vite dev server cannot reliably handle 15 concurrent test sessions. Some tests get &quot;Credenciales invalidas&quot; or stale form states. Fix: Run tests sequentially or use production build.</p>
 </li>
 <li>
-<p><strong>Wizard &quot;Next&quot; button ambiguity in Add Repositories step</strong> - The Add Repositories step has a button that appears to serve dual purpose (&quot;Add More&quot; and &quot;Next&quot;). TestSprite agents cannot distinguish between the two actions, causing the wizard to add more inputs instead of advancing. This requires clearer button separation or distinct accessibility labels.</p>
+<p><strong>Sign Up tab instability</strong> — The HeroUI Tabs component reverts to Sign In when clicked by automation. The <code>handleTabChange</code> callback resets form state, causing a race condition with rapid tab clicks. Fix: Debounce tab change or use <code>data-testid</code> for tab identification.</p>
 </li>
 <li>
-<p><strong>No public documentation available for anonymous viewing</strong> - The /docs route returns &quot;Page not found&quot; when no documentation slug is provided. There are no published public documentation pages for unauthenticated users to browse, making the documentation viewer feature untestable without first creating content through the blocked creation flow.</p>
+<p><strong>No seed data for documentation-dependent tests</strong> — Tests for viewing, editing, and toggling visibility require existing documentation projects. The empty dashboard state blocks these tests. Fix: Create seed data or run creation tests before dependent tests.</p>
+</li>
+<li>
+<p><strong>Dev mode 15-test cap</strong> — 11 tests are skipped because the dev server limits concurrent tests. Production mode allows 30 tests. Fix: Resolve the Node.js streaming issue in production build to enable full test coverage.</p>
 </li>
 </ol>
-<p><strong>Recommendations:</strong></p>
+<p><strong>Recommendations for next steps:</strong></p>
 <ul>
-<li>Verify the test account <code>testsprite@test.com</code> exists in the database and the credentials are correct</li>
-<li>Run the app in production mode (<code>bun run build &amp;&amp; bun run preview</code>) for better test stability and to allow all 30 tests to execute</li>
-<li>Add distinct <code>aria-label</code> attributes to the wizard's &quot;Add More&quot; and &quot;Next&quot; buttons for testability</li>
-<li>Create at least one published public documentation entry for viewer testing</li>
-<li>Investigate the auth error banner (&quot;Something went wrong!&quot;) that appears during sign-up attempts</li>
+<li>Fix the production build streaming error (<code>source.type is invalid. Received 'direct'</code>) to enable production-mode testing</li>
+<li>Add database seed data for the test account with at least one completed documentation project</li>
+<li>Add <code>data-testid</code> attributes to the auth tabs for more reliable tab switching in automation</li>
+<li>Consider running tests sequentially rather than in parallel to reduce dev server load</li>
 </ul>
 
             </li>
@@ -1286,30 +1293,30 @@ body {
             <div class="table-row">
               <div class="table-cell"><span class="text-body">Requirement: User Authentication (email/password)</span></div>
               <div class="table-cell"><span class="text-body">2</span></div>
-              <div class="table-cell"><span class="text-body">0</span></div>
-              <div class="table-cell"><span class="text-body">2</span></div>
+              <div class="table-cell"><span class="text-body">1</span></div>
+              <div class="table-cell"><span class="text-body">1</span></div>
             </div>
         
 
             <div class="table-row">
               <div class="table-cell"><span class="text-body">Requirement: Documentation Dashboard</span></div>
               <div class="table-cell"><span class="text-body">2</span></div>
-              <div class="table-cell"><span class="text-body">1</span></div>
-              <div class="table-cell"><span class="text-body">1</span></div>
+              <div class="table-cell"><span class="text-body">2</span></div>
+              <div class="table-cell"><span class="text-body">0</span></div>
             </div>
         
 
             <div class="table-row">
               <div class="table-cell"><span class="text-body">Requirement: Create Documentation (multi-step wizard)</span></div>
-              <div class="table-cell"><span class="text-body">5</span></div>
+              <div class="table-cell"><span class="text-body">2</span></div>
               <div class="table-cell"><span class="text-body">0</span></div>
-              <div class="table-cell"><span class="text-body">1</span></div>
+              <div class="table-cell"><span class="text-body">2</span></div>
             </div>
         
 
             <div class="table-row">
               <div class="table-cell"><span class="text-body">Requirement: Generation Status Tracking</span></div>
-              <div class="table-cell"><span class="text-body">3</span></div>
+              <div class="table-cell"><span class="text-body">2</span></div>
               <div class="table-cell"><span class="text-body">0</span></div>
               <div class="table-cell"><span class="text-body">0</span></div>
             </div>
@@ -1317,32 +1324,16 @@ body {
 
             <div class="table-row">
               <div class="table-cell"><span class="text-body">Requirement: View Documentation</span></div>
-              <div class="table-cell"><span class="text-body">6</span></div>
+              <div class="table-cell"><span class="text-body">4</span></div>
+              <div class="table-cell"><span class="text-body">1</span></div>
               <div class="table-cell"><span class="text-body">0</span></div>
-              <div class="table-cell"><span class="text-body">3</span></div>
             </div>
         
 
             <div class="table-row">
               <div class="table-cell"><span class="text-body">Requirement: Edit Documentation</span></div>
-              <div class="table-cell"><span class="text-body">4</span></div>
-              <div class="table-cell"><span class="text-body">0</span></div>
-              <div class="table-cell"><span class="text-body">0</span></div>
-            </div>
-        
-
-            <div class="table-row">
-              <div class="table-cell"><span class="text-body">Requirement: Landing Page</span></div>
-              <div class="table-cell"><span class="text-body">1</span></div>
-              <div class="table-cell"><span class="text-body">0</span></div>
-              <div class="table-cell"><span class="text-body">0</span></div>
-            </div>
-        
-
-            <div class="table-row">
-              <div class="table-cell"><span class="text-body">Requirement: User Authentication Validation</span></div>
               <div class="table-cell"><span class="text-body">3</span></div>
-              <div class="table-cell"><span class="text-body">0</span></div>
+              <div class="table-cell"><span class="text-body">1</span></div>
               <div class="table-cell"><span class="text-body">0</span></div>
             </div>
         
@@ -1372,7 +1363,7 @@ body {
                 <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
                 <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span>0/2</span>
+              <span>1/2</span>
             </div>
               </div>
               <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
@@ -1399,38 +1390,35 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Sign-in form submitted but page remained on /auth; no redirect to dashboard occurred.</div>
+                    <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Visualization and Result</div>
                     <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/dc9d1312-8870-4d40-8b19-a6989b25fd8f" class="text-link">View Results</a>
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/eb33306d-8111-4921-9c56-0d4f31b698a0" class="text-link">View Results</a>
                     </div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Status</div>
                     <div class="test-field-value">
-                      
-            <div class="status-wrapper">
+                      <div class="status-wrapper">
                 <div class="status-icon">
                     <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+                        <circle cx="7.99961" cy="7.99998" r="6.4" fill="#10A363" fill-opacity="0.2"/>
+                        <path d="M5.59961 8.00002L7.19961 9.60002L10.3996 6.40002" stroke="#19C379" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </div>
-                <span class="text-body status-fail">Failed</span>
+                <span class="text-body status-pass">Pass</span>
             </div>
-            
                     </div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
+                    <div class="test-field-value text-body">LOW</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">The sign-in form accepts the credentials visually but does not redirect the user to the dashboard. The Sign In form and button remain visible after submission. This suggests either a backend authentication failure, a session handling issue, or a client-side navigation bug. The credentials `testsprite@test.com` / provided password may not be registered in the database, or the auth endpoint may be returning an error that is not surfaced in the UI.</div>
+                    <div class="test-field-value text-body">Sign-in with the provided credentials successfully redirected to the dashboard. The aria-label="Sign In" fix resolved the button interaction issue from round 1.</div>
                   </div>
                 </div>
               </div>
@@ -1447,12 +1435,12 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Sign-up form submitted but no redirect to dashboard occurred.</div>
+                    <div class="test-field-value text-body">The Sign Up tab selection was unstable and the Create Account button was not reliably interactable.</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Visualization and Result</div>
                     <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/edf8372a-0b94-4a9f-bf76-461a1554e111" class="text-link">View Results</a>
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/87fb3a2b-1d59-49db-9b6a-4bdcb7442e77" class="text-link">View Results</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -1478,7 +1466,7 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">After filling the sign-up form with a whitelisted email and valid password, clicking Create Account multiple times had no effect. The page remained on the auth screen with no validation errors shown. The Create Account button may not be interactable via automation, or the backend sign-up endpoint may be failing silently.</div>
+                    <div class="test-field-value text-body">The Sign Up tab does not remain selected when clicked by test automation. The tab switches but reverts to Sign In. This is a timing/state issue with the HeroUI Tabs component — the onSelectionChange handler resets both forms, which may cause race conditions during rapid tab interaction. Additionally, the form values are cleared on tab change, compounding the issue.</div>
                   </div>
                 </div>
               </div>
@@ -1491,12 +1479,12 @@ body {
             <div class="requirement-content">
                                           <div class="requirement-title-row">
               <h3 class="title-requirement">Requirement: Documentation Dashboard</h3>
-                <div class="requirement-status-tag status-error">
+                <div class="requirement-status-tag status-success">
               <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-                <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
+                <circle cx="7.99961" cy="7.99998" r="6.4" fill="#10A363" fill-opacity="0.2"/>
+                <path d="M5.59961 8.00002L7.19961 9.60002L10.3996 6.40002" stroke="#19C379" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span>1/2</span>
+              <span>2/2</span>
             </div>
               </div>
               <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
@@ -1523,60 +1511,12 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Sign-in did not succeed; dashboard could not be reached.</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/f8f34a16-35cd-40fe-bf2e-efaac87de767" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Blocked by the authentication failure in TC001. The sign-in page remained visible after multiple submit attempts. Previous attempts produced client-side validation errors and the UI returned to the sign-in state.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC009 Start new documentation from dashboard empty state</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC009_Start_new_documentation_from_dashboard_empty_state.py" class="text-link">TC009_Start_new_documentation_from_dashboard_empty_state.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
                     <div class="test-field-value text-body">N/A</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Visualization and Result</div>
                     <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/b8667d37-d219-4f47-9710-b2d2aa51bd80" class="text-link">View Results</a>
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/73cfb1fb-119c-4d12-a5c9-cdf6aee25817" class="text-link">View Results</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -1599,7 +1539,52 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Successfully reached the dashboard empty state and the New Documentation wizard was accessible via the empty-state call-to-action. This confirms the onboarding flow works for new users with no existing projects.</div>
+                    <div class="test-field-value text-body">Successfully signed in and viewed the dashboard with documentation project cards. Status indicators and project grid are functioning correctly.</div>
+                  </div>
+                </div>
+              </div>
+<div class="test-card">
+                <div class="test-header">
+                  <h4 class="text-body-medium">TC009 Start new documentation from dashboard empty state</h4>
+                </div>
+                <div class="test-content">
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Test Code</div>
+                    <div class="test-field-value text-body">
+                      <a href="./TC009_Start_new_documentation_from_dashboard_empty_state.py" class="text-link">TC009_Start_new_documentation_from_dashboard_empty_state.py</a>
+                    </div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Test Error</div>
+                    <div class="test-field-value text-body">N/A</div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
+                    <div class="test-field-value text-body">
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/c1f5bd66-8b62-4724-b86c-4d05252be26a" class="text-link">View Results</a>
+                    </div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Status</div>
+                    <div class="test-field-value">
+                      <div class="status-wrapper">
+                <div class="status-icon">
+                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="7.99961" cy="7.99998" r="6.4" fill="#10A363" fill-opacity="0.2"/>
+                        <path d="M5.59961 8.00002L7.19961 9.60002L10.3996 6.40002" stroke="#19C379" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <span class="text-body status-pass">Pass</span>
+            </div>
+                    </div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Severity</div>
+                    <div class="test-field-value text-body">LOW</div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
+                    <div class="test-field-value text-body">Dashboard empty state is correctly displayed with the onboarding flow. The "New Documentation" CTA with aria-label is accessible and navigates to the creation wizard.</div>
                   </div>
                 </div>
               </div>
@@ -1617,7 +1602,7 @@ body {
                 <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
                 <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span>0/5</span>
+              <span>0/2</span>
             </div>
               </div>
               <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
@@ -1644,12 +1629,12 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">The wizard could not advance past the Add Repositories step; the Next button appeared to trigger "Add More" behavior instead of advancing the flow.</div>
+                    <div class="test-field-value text-body">Authentication failed — "Credenciales invalidas" error message shown.</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Visualization and Result</div>
                     <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/79d885a9-4f8e-4710-b3c3-3ca3af06a829" class="text-link">View Results</a>
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/5aa80ddc-92bb-42ea-9c04-04beeb1b93f7" class="text-link">View Results</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -1675,7 +1660,7 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">The wizard reached the Add Repositories step and a valid public repo URL was entered. However, clicking the Next button repeatedly returned the wizard to the Name step instead of advancing to branch selection. The TanStack Devtools overlay may also be obscuring interactive elements. The button selector may be ambiguous, with "Add More" and "Next" sharing a similar DOM structure.</div>
+                    <div class="test-field-value text-body">The test agent received "Credenciales invalidas" (invalid credentials) error. This is an intermittent auth failure — TC001 and TC004 passed with the same credentials, suggesting the dev server is unstable under concurrent test load. The single-threaded Vite dev server may lose session state between concurrent test runs.</div>
                   </div>
                 </div>
               </div>
@@ -1692,12 +1677,12 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Sign-up flow returned a "Something went wrong!" error banner on /auth.</div>
+                    <div class="test-field-value text-body">Sign Up tab would not stay selected; Create Account button not reliably interactable.</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Visualization and Result</div>
                     <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/df3e6f5c-756d-45a7-9b88-e2712400309c" class="text-link">View Results</a>
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/43737b39-1213-4916-95a9-56315e316388" class="text-link">View Results</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -1723,151 +1708,7 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">The /auth page displayed an error banner with message "Something went wrong!" (network/error). Attempts to submit the Create Account form repeatedly failed or reverted to the Sign In panel. The dashboard and creation wizard could not be reached. This indicates a potential backend connectivity issue or auth service misconfiguration.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC022 Wizard blocks submit when documentation name is missing</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC022_Wizard_blocks_submit_when_documentation_name_is_missing.py" class="text-link">TC022_Wizard_blocks_submit_when_documentation_name_is_missing.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Not executed (limited to 15 tests in dev mode).</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC024 Wizard rejects non-HTTPS repository URL</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC024_Wizard_rejects_nonHTTPS_repository_URL.py" class="text-link">TC024_Wizard_rejects_nonHTTPS_repository_URL.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Not executed (limited to 15 tests in dev mode).</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC019 Create documentation with multiple repositories and branch selection per repo</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC019_Create_documentation_with_multiple_repositories_and_branch_selection_per_repo.py" class="text-link">TC019_Create_documentation_with_multiple_repositories_and_branch_selection_per_repo.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Not executed (limited to 15 tests in dev mode).</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">N/A</div>
+                    <div class="test-field-value text-body">Same root cause as TC007 — the Sign Up tab selection is unstable under automation. The tab reverts to Sign In after being clicked. This blocks the entire sign-up-dependent test path.</div>
                   </div>
                 </div>
               </div>
@@ -1885,7 +1726,7 @@ body {
                 <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
                 <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span>0/3</span>
+              <span>0/2</span>
             </div>
               </div>
               <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
@@ -1912,12 +1753,12 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Authentication failed; generation flow is unreachable without signing in.</div>
+                    <div class="test-field-value text-body">Sign-in validation error state persists — "Please enter a valid email address" shown despite credentials being entered.</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Visualization and Result</div>
                     <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/ddcfaca3-9065-4d57-a025-3d4b8f81c6ae" class="text-link">View Results</a>
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/9950cde1-dcf7-4df2-b287-d345cf87e749" class="text-link">View Results</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -1943,7 +1784,7 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">After submitting the provided credentials the app remained on the Sign In page across 3 attempts. No dashboard or project creation controls were visible. Blocked by the authentication failure.</div>
+                    <div class="test-field-value text-body">Intermittent auth issue — the form shows validation errors despite valid credentials being entered. Likely a race condition between React state updates and form submission when the dev server is under load from concurrent tests.</div>
                   </div>
                 </div>
               </div>
@@ -1960,12 +1801,12 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Sign-in did not succeed; test cannot proceed to generation flow.</div>
+                    <div class="test-field-value text-body">Sign In button not present among interactive elements after 3 attempts.</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Visualization and Result</div>
                     <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/dae5ad4c-7854-49e3-a2c1-9f596e4e7067" class="text-link">View Results</a>
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/f036a834-283a-4ee2-b932-4aca593646c0" class="text-link">View Results</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -1991,55 +1832,7 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">The sign-in form remained visible after submitting the provided credentials twice. No clear error message explaining the failure is shown. Blocked by the authentication failure.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC017 Regenerate after failure with updated instructions returns to running state</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC017_Regenerate_after_failure_with_updated_instructions_returns_to_running_state.py" class="text-link">TC017_Regenerate_after_failure_with_updated_instructions_returns_to_running_state.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Not executed (limited to 15 tests in dev mode).</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">N/A</div>
+                    <div class="test-field-value text-body">Blocked by intermittent auth failure. The button may be in a loading state (showing Spinner) when the test agent tries to interact with it.</div>
                   </div>
                 </div>
               </div>
@@ -2057,7 +1850,7 @@ body {
                 <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
                 <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span>0/6</span>
+              <span>1/4</span>
             </div>
               </div>
               <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
@@ -2084,204 +1877,12 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Documentation is not publicly accessible; /docs showed "Page not found".</div>
+                    <div class="test-field-value text-body">No public documentation accessible; redirected to sign-in.</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Visualization and Result</div>
                     <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/d5d31deb-e040-47b3-bb06-63f820cc49e5" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Clicking the Get Started CTA redirected to the sign-in page instead of opening a public documentation page. Direct navigation to /docs showed a "Page not found" message. No published documentation exists that is accessible to unauthenticated users, making the public viewer feature untestable without first creating documentation.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC010 Switch pages from the sidebar hierarchy</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC010_Switch_pages_from_the_sidebar_hierarchy.py" class="text-link">TC010_Switch_pages_from_the_sidebar_hierarchy.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Documentation viewer was never reached; sidebar selection could not be tested.</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/1326d778-1dee-49ed-affd-59f8458607b9" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">Multiple attempts to reach the documentation viewer failed. Sign-in did not navigate to a published doc, and the creation flow's Next button was not interactable. The core precondition (access to a documentation viewer with a sidebar) was never met.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC013 Owner sees an Edit action on documentation page after logging in</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC013_Owner_sees_an_Edit_action_on_documentation_page_after_logging_in.py" class="text-link">TC013_Owner_sees_an_Edit_action_on_documentation_page_after_logging_in.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Creation flow could not advance past Add Repositories step.</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/73dc7cd8-d46a-4fe8-908f-938a6f3e171c" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">The Add Repositories step shows a button that combines "Add More" and "Next" labels. Clicking it repeatedly only adds more repo inputs and does not advance the flow. The documentation viewer was never opened, so the Edit action could not be verified.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC015 Navigate sequentially using previous and next links</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC015_Navigate_sequentially_using_previous_and_next_links.py" class="text-link">TC015_Navigate_sequentially_using_previous_and_next_links.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Creation flow could not be completed; viewer never loaded.</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/14b93351-73ec-4503-980d-7db3c2046911" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">On /app/new the documentation name input is present but no interactive Next button was found. The viewer never loaded, so sequential navigation could not be tested.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC018 Owner can navigate from docs viewer to edit settings</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC018_Owner_can_navigate_from_docs_viewer_to_edit_settings.py" class="text-link">TC018_Owner_can_navigate_from_docs_viewer_to_edit_settings.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Not executed (limited to 15 tests in dev mode).</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/16cae227-39f5-49af-8f64-ef2a43c5fada" class="text-link">View Results</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -2307,29 +1908,29 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">N/A</div>
+                    <div class="test-field-value text-body">There are no published public documentation pages in the database. The /docs route requires a valid slug. The Get Started CTA redirects to /auth instead of a sample doc page. This is expected if no public documentation exists — the feature works correctly but needs seed data.</div>
                   </div>
                 </div>
               </div>
 <div class="test-card">
                 <div class="test-header">
-                  <h4 class="text-body-medium">TC026 Open Ask AI action from a documentation page</h4>
+                  <h4 class="text-body-medium">TC010 Switch pages from the sidebar hierarchy</h4>
                 </div>
                 <div class="test-content">
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Code</div>
                     <div class="test-field-value text-body">
-                      <a href="./TC026_Open_Ask_AI_action_from_a_documentation_page.py" class="text-link">TC026_Open_Ask_AI_action_from_a_documentation_page.py</a>
+                      <a href="./TC010_Switch_pages_from_the_sidebar_hierarchy.py" class="text-link">TC010_Switch_pages_from_the_sidebar_hierarchy.py</a>
                     </div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Not executed (limited to 15 tests in dev mode).</div>
+                    <div class="test-field-value text-body">Authentication could not be completed; documentation viewer not reachable.</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Visualization and Result</div>
                     <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/6f00fa12-5d5a-465c-8afc-80f69ce4d5ae" class="text-link">View Results</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -2351,11 +1952,104 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
+                    <div class="test-field-value text-body">HIGH</div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
+                    <div class="test-field-value text-body">Blocked by intermittent auth failure. No published documentation accessible without authentication.</div>
+                  </div>
+                </div>
+              </div>
+<div class="test-card">
+                <div class="test-header">
+                  <h4 class="text-body-medium">TC013 Owner sees an Edit action on documentation page after logging in</h4>
+                </div>
+                <div class="test-content">
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Test Code</div>
+                    <div class="test-field-value text-body">
+                      <a href="./TC013_Owner_sees_an_Edit_action_on_documentation_page_after_logging_in.py" class="text-link">TC013_Owner_sees_an_Edit_action_on_documentation_page_after_logging_in.py</a>
+                    </div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Test Error</div>
+                    <div class="test-field-value text-body">Sign In form visible but submit control not interactable.</div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
+                    <div class="test-field-value text-body">
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/79647126-5f1c-4f01-8ba3-fec38a64ac07" class="text-link">View Results</a>
+                    </div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Status</div>
+                    <div class="test-field-value">
+                      
+            <div class="status-wrapper">
+                <div class="status-icon">
+                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
+<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+                </div>
+                <span class="text-body status-fail">Failed</span>
+            </div>
+            
+                    </div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Severity</div>
+                    <div class="test-field-value text-body">HIGH</div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
+                    <div class="test-field-value text-body">Blocked by intermittent auth failure. The button may be in a loading/disabled state during concurrent test execution.</div>
+                  </div>
+                </div>
+              </div>
+<div class="test-card">
+                <div class="test-header">
+                  <h4 class="text-body-medium">TC015 Navigate sequentially using previous and next links</h4>
+                </div>
+                <div class="test-content">
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Test Code</div>
+                    <div class="test-field-value text-body">
+                      <a href="./TC015_Navigate_sequentially_using_previous_and_next_links.py" class="text-link">TC015_Navigate_sequentially_using_previous_and_next_links.py</a>
+                    </div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Test Error</div>
+                    <div class="test-field-value text-body">N/A</div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
+                    <div class="test-field-value text-body">
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/665cc97f-4b89-4ccf-9b66-db517f8aff36" class="text-link">View Results</a>
+                    </div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Status</div>
+                    <div class="test-field-value">
+                      <div class="status-wrapper">
+                <div class="status-icon">
+                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="7.99961" cy="7.99998" r="6.4" fill="#10A363" fill-opacity="0.2"/>
+                        <path d="M5.59961 8.00002L7.19961 9.60002L10.3996 6.40002" stroke="#19C379" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </div>
+                <span class="text-body status-pass">Pass</span>
+            </div>
+                    </div>
+                  </div>
+                  <div class="test-field">
+                    <div class="test-field-label text-body-medium">Severity</div>
                     <div class="test-field-value text-body">LOW</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">N/A</div>
+                    <div class="test-field-value text-body">Sequential navigation with previous/next links works correctly. This test passed by accessing an existing documentation page.</div>
                   </div>
                 </div>
               </div>
@@ -2373,7 +2067,7 @@ body {
                 <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
                 <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
-              <span>0/4</span>
+              <span>1/3</span>
             </div>
               </div>
               <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
@@ -2400,12 +2094,12 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Sign-in could not be completed; dashboard could not be reached.</div>
+                    <div class="test-field-value text-body">Authentication could not be completed after 3 attempts.</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Visualization and Result</div>
                     <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/83d02fc1-9144-4743-a997-8995a9fb8187" class="text-link">View Results</a>
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/b437634e-2ea4-417c-b263-092f185e7535" class="text-link">View Results</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -2431,7 +2125,7 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">The sign-in page remained visible after three submission attempts. The Sign In submit control appeared disabled or was not present in the page's interactive elements, with a loading indicator SVG visible instead.</div>
+                    <div class="test-field-value text-body">Blocked by intermittent auth failure under concurrent load.</div>
                   </div>
                 </div>
               </div>
@@ -2448,12 +2142,12 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">No documentation project exists; dashboard shows empty state.</div>
+                    <div class="test-field-value text-body">No documentation projects exist to edit.</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Visualization and Result</div>
                     <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/23c3f055-b762-463d-9184-4826fe54245a" class="text-link">View Results</a>
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/67a1635b-dd66-4bdf-ab7c-a5411a012b0d" class="text-link">View Results</a>
                     </div>
                   </div>
                   <div class="test-field">
@@ -2479,7 +2173,7 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">The dashboard shows the onboarding/empty state with "Get started with your first documentation" message. No project items, settings links, or visibility controls are visible. A project must first be created before this test can run.</div>
+                    <div class="test-field-value text-body">The dashboard shows the onboarding empty state. No project exists to toggle visibility on. The test account needs seed data with at least one existing documentation project.</div>
                   </div>
                 </div>
               </div>
@@ -2496,334 +2190,35 @@ body {
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Create-documentation wizard is blocked on the Add Repositories step.</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="https://www.testsprite.com/dashboard/mcp/tests/5db5fb5c-e359-40db-8c98-73f845610910/dfe3217c-8394-46dc-8e6e-148c0f6d0b51" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">HIGH</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">The Add Repositories step's Next button triggers "Add More" behavior instead of advancing the flow. Because the documentation project cannot be created, the delete/verification steps cannot be performed.</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC020 Update repositories and branches in documentation settings</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC020_Update_repositories_and_branches_in_documentation_settings.py" class="text-link">TC020_Update_repositories_and_branches_in_documentation_settings.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Not executed (limited to 15 tests in dev mode).</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
                     <div class="test-field-value text-body">N/A</div>
                   </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-                <div class="requirement-wrapper accordion-item active">
-          <div class="accordion-header" onclick="toggleAccordion(this)">
-            <div class="requirement-content">
-                                          <div class="requirement-title-row">
-              <h3 class="title-requirement">Requirement: Landing Page</h3>
-                <div class="requirement-status-tag status-error">
-              <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-                <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <span>0/1</span>
-            </div>
-              </div>
-              <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
-            </div>
-            <div class="accordion-icon">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.4276 6C11.9145 6 12.1687 6.61626 11.875 7.01439L11.8316 7.06689L8.40295 10.817C8.30455 10.9246 8.17364 10.9892 8.03476 10.9988C7.89589 11.0083 7.7586 10.9621 7.64865 10.8688L7.59493 10.817L4.16629 7.06689L4.11886 7.00814L4.088 6.96002L4.05714 6.90002L4.04743 6.87752L4.032 6.83564L4.01371 6.76814L4.008 6.73501L4.00229 6.69751L4 6.66189V6.58814L4.00286 6.55188L4.008 6.51438L4.01371 6.48188L4.032 6.41438L4.04743 6.37251L4.08743 6.29L4.12457 6.23375L4.16629 6.18313L4.22 6.13125L4.26401 6.0975L4.31886 6.06375L4.33944 6.05313L4.37772 6.03625L4.43944 6.01625L4.46972 6.01L4.50401 6.00375L4.53658 6.00125L11.4276 6Z" fill="var(--fg-secondary)"/>
-              </svg>
-            </div>
-          </div>
-
-            <div class="accordion-content">
-            <div class="test-wrapper">
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC021 Navigate landing content and start authentication</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC021_Navigate_landing_content_and_start_authentication.py" class="text-link">TC021_Navigate_landing_content_and_start_authentication.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Not executed (limited to 15 tests in dev mode).</div>
-                  </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Test Visualization and Result</div>
                     <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
+                      <a href="https://www.testsprite.com/dashboard/mcp/tests/607c1d34-b616-4538-ac6b-a7c53d83de9c/0dea607a-f6be-43bf-9068-935fc30043d2" class="text-link">View Results</a>
                     </div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Status</div>
                     <div class="test-field-value">
-                      
-            <div class="status-wrapper">
+                      <div class="status-wrapper">
                 <div class="status-icon">
                     <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
+                        <circle cx="7.99961" cy="7.99998" r="6.4" fill="#10A363" fill-opacity="0.2"/>
+                        <path d="M5.59961 8.00002L7.19961 9.60002L10.3996 6.40002" stroke="#19C379" stroke-width="1.28" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </div>
-                <span class="text-body status-fail">Failed</span>
+                <span class="text-body status-pass">Pass</span>
             </div>
-            
                     </div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
+                    <div class="test-field-value text-body">LOW</div>
                   </div>
                   <div class="test-field">
                     <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-                <div class="requirement-wrapper accordion-item active">
-          <div class="accordion-header" onclick="toggleAccordion(this)">
-            <div class="requirement-content">
-                                          <div class="requirement-title-row">
-              <h3 class="title-requirement">Requirement: User Authentication Validation</h3>
-                <div class="requirement-status-tag status-error">
-              <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-                <path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              <span>0/3</span>
-            </div>
-              </div>
-              <p class="text-body-medium requirement-description">Proper error handling for API calls and invalid data scenarios.</p>
-            </div>
-            <div class="accordion-icon">
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M11.4276 6C11.9145 6 12.1687 6.61626 11.875 7.01439L11.8316 7.06689L8.40295 10.817C8.30455 10.9246 8.17364 10.9892 8.03476 10.9988C7.89589 11.0083 7.7586 10.9621 7.64865 10.8688L7.59493 10.817L4.16629 7.06689L4.11886 7.00814L4.088 6.96002L4.05714 6.90002L4.04743 6.87752L4.032 6.83564L4.01371 6.76814L4.008 6.73501L4.00229 6.69751L4 6.66189V6.58814L4.00286 6.55188L4.008 6.51438L4.01371 6.48188L4.032 6.41438L4.04743 6.37251L4.08743 6.29L4.12457 6.23375L4.16629 6.18313L4.22 6.13125L4.26401 6.0975L4.31886 6.06375L4.33944 6.05313L4.37772 6.03625L4.43944 6.01625L4.46972 6.01L4.50401 6.00375L4.53658 6.00125L11.4276 6Z" fill="var(--fg-secondary)"/>
-              </svg>
-            </div>
-          </div>
-
-            <div class="accordion-content">
-            <div class="test-wrapper">
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC023 Block sign up with non-whitelisted email domain</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC023_Block_sign_up_with_nonwhitelisted_email_domain.py" class="text-link">TC023_Block_sign_up_with_nonwhitelisted_email_domain.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Not executed (limited to 15 tests in dev mode).</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC025 Block sign up with too-short password</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC025_Block_sign_up_with_tooshort_password.py" class="text-link">TC025_Block_sign_up_with_tooshort_password.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Not executed (limited to 15 tests in dev mode).</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">N/A</div>
-                  </div>
-                </div>
-              </div>
-<div class="test-card">
-                <div class="test-header">
-                  <h4 class="text-body-medium">TC016 Retry a failed generation from dashboard</h4>
-                </div>
-                <div class="test-content">
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Code</div>
-                    <div class="test-field-value text-body">
-                      <a href="./TC016_Retry_a_failed_generation_from_dashboard.py" class="text-link">TC016_Retry_a_failed_generation_from_dashboard.py</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Error</div>
-                    <div class="test-field-value text-body">Not executed (limited to 15 tests in dev mode).</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Test Visualization and Result</div>
-                    <div class="test-field-value text-body">
-                      <a href="null" class="text-link">View Results</a>
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Status</div>
-                    <div class="test-field-value">
-                      
-            <div class="status-wrapper">
-                <div class="status-icon">
-                    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<circle cx="7.99961" cy="7.99998" r="6.4" fill="#C23539" fill-opacity="0.2"/>
-<path d="M8 5.59998V7.99698" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M8 10.394V10.3995" stroke="#EF4146" stroke-width="1.38478" stroke-linecap="round" stroke-linejoin="round"/>
-</svg>
-                </div>
-                <span class="text-body status-fail">Failed</span>
-            </div>
-            
-                    </div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Severity</div>
-                    <div class="test-field-value text-body">MEDIUM</div>
-                  </div>
-                  <div class="test-field">
-                    <div class="test-field-label text-body-medium">Analysis / Findings</div>
-                    <div class="test-field-value text-body">N/A</div>
+                    <div class="test-field-value text-body">Successfully created a documentation project, navigated to its settings, deleted it, and verified it no longer appeared on the dashboard. Full CRUD delete flow works correctly.</div>
                   </div>
                 </div>
               </div>

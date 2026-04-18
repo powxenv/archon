@@ -44,7 +44,7 @@ function RouteComponent() {
                 </p>
               </div>
               <div>
-                <Link to="/app/new" className={buttonVariants()}>
+                <Link to="/app/new" className={buttonVariants()} aria-label="New Documentation">
                   <SolarStarFallLinear />
                   New Documentation
                 </Link>
@@ -143,7 +143,7 @@ function RouteComponent() {
                 Turn your codebase into clear, complete documentation in three simple steps
               </p>
               <div className="mt-4">
-                <Link to="/app/new" className={buttonVariants()}>
+                <Link to="/app/new" className={buttonVariants()} aria-label="New Documentation">
                   <SolarStarFallLinear />
                   New Documentation
                 </Link>

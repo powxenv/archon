@@ -175,8 +175,9 @@ function AuthIndex() {
                       form="signin-form"
                       className="w-full"
                       isDisabled={isPending}
+                      aria-label="Sign In"
                     >
-                      {isPending ? <Spinner /> : "Sign In"}
+                      {isPending ? <Spinner aria-label="Loading" /> : "Sign In"}
                     </Button>
                   </FieldGroup>
                 </form>
@@ -257,8 +258,9 @@ function AuthIndex() {
                       form="signup-form"
                       className="w-full"
                       isDisabled={isPending}
+                      aria-label="Create Account"
                     >
-                      {isPending ? <Spinner /> : "Create Account"}
+                      {isPending ? <Spinner aria-label="Loading" /> : "Create Account"}
                     </Button>
                   </FieldGroup>
                 </form>

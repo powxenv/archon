@@ -33,13 +33,13 @@ async def run_test():
         # -> Navigate to http://localhost:7162
         await page.goto("http://localhost:7162")
         
-        # -> Click the 'Sign In' link to open the authentication page (index 54).
+        # -> Click the 'Sign In' link to open the authentication page.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/header/div/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the Email field with testsprite@test.com (index 389).
+        # -> Fill the Email field with testsprite@test.com, fill the Password field with the provided password, and submit the sign-in form.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -55,13 +55,7 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Try submitting the sign-in form again (click the 'Sign In' button) and wait for the UI to update to confirm authentication or show an error.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Fill the Email and Password fields with the provided credentials and submit the Sign In form so we can proceed to create a project.
+        # -> Fill the Email and Password fields with the provided credentials and click the 'Sign In' button to authenticate.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -72,6 +66,28 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[2]/div/input').nth(0)
         await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
         
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Fill Email and Password fields with provided credentials and submit the sign-in form to authenticate.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('testsprite@test.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[2]/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the 'Sign In' button to submit the credentials and attempt authentication.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
@@ -79,7 +95,7 @@ async def run_test():
         
         # --> Assertions to verify final state
         frame = context.pages[-1]
-        assert await frame.locator("xpath=//*[contains(., 'Introduction')]").nth(0).is_visible(), "The documentation viewer should display page content and navigation after successful generation."
+        assert await frame.locator("xpath=//*[contains(., 'Table of contents')]").nth(0).is_visible(), "The documentation viewer should display a table of contents and page content after generation"
         await asyncio.sleep(5)
 
     finally:

@@ -33,31 +33,40 @@ async def run_test():
         # -> Navigate to http://localhost:7162
         await page.goto("http://localhost:7162")
         
-        # -> Open the authentication page by clicking 'Sign In', then switch to the Sign up form if necessary.
+        # -> Open the authentication page by clicking the 'Sign In' button (aria-label 'Sign In').
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/header/div/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Switch to the Sign Up tab to reveal the sign-up form (click element index 379).
+        # -> Switch to the Sign Up form so the sign-up fields become visible.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Sign Up' tab (element index 379) to reveal the sign-up form, then wait for the sign-up fields to appear.
+        # -> Click the 'Sign Up' tab (element index 379) to reveal the sign-up form fields.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Sign Up' tab (element index 441) to reveal the sign-up form, then wait for the sign-up fields to appear.
+        # -> Use an alternative approach to show the Sign Up form (navigate to the auth page with a signup query parameter so the signup panel is shown).
+        await page.goto("http://localhost:7162/auth?tab=signup")
+        
+        # -> Click the 'Sign Up' tab element to reveal the sign-up form fields and then re-observe the form inputs.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the Name field (index 1006) with 'Test Sprite' as the first step of creating an account.
+        # -> Click the Sign Up tab element to reveal the sign-up form fields so I can observe and fill them next.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Fill the Name, Email, and Password fields with a whitelisted-domain email and valid password, then click 'Create Account' to submit the sign-up form.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -73,25 +82,31 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[3]/div/input').nth(0)
         await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
         
-        # -> Click the 'Create Account' button to submit the sign-up form, then wait for the app to navigate to the dashboard.
+        # -> Click the 'Create Account' button to submit the sign-up form and verify the user is redirected to the dashboard.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Open the Sign Up tab so the sign-up form is visible (then stop and let the page update before filling fields).
+        # -> Reveal the Sign Up form by clicking the 'Sign Up' tab so I can re-fill the form (if necessary) and submit the Create Account button.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Make the Sign Up form visible again by clicking the 'Sign Up' tab so I can submit the filled information.
+        # -> Click the 'Sign Up' tab to reveal the sign-up form fields so I can observe and submit the Create Account button.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the Sign Up form (Name, Email, Password) and click Create Account to submit the sign-up. Then wait for the app to navigate to the dashboard and verify redirect.
+        # -> Click the 'Create Account' button to submit the sign-up form and then verify whether the app redirects to the dashboard.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Re-fill the Name, Email, and Password fields (observe current inputs) and click 'Create Account' to attempt account creation and verify redirect to the dashboard.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -107,25 +122,25 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[3]/div/input').nth(0)
         await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
         
-        # -> Click the 'Create Account' button to submit the sign-up form (element index 1829), then wait for the app to navigate to the dashboard.
+        # -> Click the 'Create Account' button to submit the sign-up form and verify redirection to the dashboard.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Sign Up' tab to reveal the sign-up form so I can refill and submit the sign-up.
+        # -> Click the 'Sign Up' tab to reveal the sign-up form fields so I can observe and fill them next.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Sign Up' tab so the sign-up form is visible, then stop and let the page update before filling fields.
+        # -> Click the 'Sign Up' tab (index 2712) to reveal the sign-up form fields, then re-observe the visible inputs before filling them.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill Name, Email, and Password fields with the test credentials and click the Create Account button (index 2592), then wait for the app to navigate to the dashboard.
+        # -> Fill the Name, Email, and Password fields (if needed) and click the Create Account button to submit the sign-up form (button index 2791).
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -141,25 +156,31 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[3]/div/input').nth(0)
         await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
         
-        # -> Click the 'Create Account' button to submit the sign-up form, then wait for the app to navigate to the dashboard and verify redirect.
+        # -> Click the 'Create Account' button to submit the sign-up form, wait for the app to respond, and verify whether the user is redirected to the dashboard.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Sign Up' tab so the sign-up form becomes visible, then observe the form before filling/submitting.
+        # -> Click the 'Sign Up' tab to reveal the sign-up form fields so I can observe and then fill/submit the form.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Sign Up' tab so the sign-up form becomes visible, then observe the form before filling fields.
+        # -> Click the 'Sign Up' tab to reveal the sign-up form fields so the name/email/password inputs become visible and the Create Account button can be submitted.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div/div').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the 'Sign Up' tab to reveal the sign-up form fields so I can observe the visible inputs before filling/submitting.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the sign-up form (Name, Email, Password) and click Create Account to submit; then observe whether the app redirects to the dashboard.
+        # -> Fill Name, Email, and Password fields (indices 3570, 3575, 3580) and click Create Account (index 3586), then wait for the app to respond and verify whether the user is redirected to the dashboard.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -175,25 +196,19 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[3]/div/input').nth(0)
         await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
         
-        # -> Click the 'Create Account' button (index 3354) to submit the sign-up form and wait for the app to navigate to the dashboard; then verify the redirect.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Sign Up' tab to reveal the sign-up form so fields can be observed and filled (index 3457).
+        # -> Click the 'Sign Up' tab to reveal the sign-up form fields so I can observe and (re)fill them and then submit the Create Account button.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Sign Up' tab to make the sign-up form visible, then wait for the page to update so fields can be observed.
+        # -> Click the 'Sign Up' tab to try to reveal the sign-up form fields so I can observe the inputs before filling/submitting.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill Name, Email, Password fields with test credentials, click Create Account to submit, then wait and verify whether the app redirects to the dashboard.
+        # -> Fill the Name, Email, and Password fields and click 'Create Account', then wait for the app to respond and observe whether it redirects to the dashboard.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -209,50 +224,22 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[3]/div/input').nth(0)
         await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
         
-        # -> Click the 'Create Account' button to submit the sign-up form, then observe whether the app redirects to the dashboard.
+        # -> Click the 'Create Account' button to submit the sign-up form, then wait for the app to respond and verify whether the user is redirected to the dashboard.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Sign Up' tab to reveal the sign-up form so I can observe the visible fields before filling/submitting.
+        # -> Reveal the Sign Up form by clicking the 'Sign Up' tab so the sign-up inputs become visible and can be observed before filling/submitting.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the 'Sign Up' tab so the sign-up form becomes visible and stop to let the page update before filling fields.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div/div/div[2]').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Fill Name, Email, and Password fields with the test credentials and click Create Account to submit, then observe whether the app redirects to the dashboard.
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('Test Sprite')
-        
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[2]/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('testsprite@test.com')
-        
-        frame = context.pages[-1]
-        # Input text
-        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[3]/div/input').nth(0)
-        await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
-        
-        # -> Click the 'Create Account' button (index 4891) to submit the sign-up form, then wait for the app to navigate and verify whether the user lands on the dashboard.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
         # --> Assertions to verify final state
         frame = context.pages[-1]
         current_url = await frame.evaluate("() => window.location.href")
-        assert '/dashboard' in current_url, "The page should have navigated to the dashboard after submitting the sign-up form."
+        assert '/dashboard' in current_url, "The page should have navigated to the dashboard after successful account creation."
         await asyncio.sleep(5)
 
     finally:
