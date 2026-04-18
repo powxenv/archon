@@ -18,9 +18,8 @@ module.exports = {
     },
     {
       name: "archon-worker",
-      script: "services/worker/index.ts",
-      interpreter: "bun",
-      exec_mode: "fork",
+      script: "bun",
+      args: "run services/worker/index.ts",
       cwd: "./",
       env: {
         NODE_ENV: "production",
