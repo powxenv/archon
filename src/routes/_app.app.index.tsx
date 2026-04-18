@@ -1,5 +1,5 @@
 import { buttonVariants, cn, Spinner } from "@heroui/react";
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import SolarStarFallLinear from "~icons/solar/star-fall-linear";
 import SolarDocumentLineDuotone from "~icons/solar/document-line-duotone";
 import SolarCode2Linear from "~icons/solar/code-2-linear";
@@ -29,6 +29,7 @@ export const Route = createFileRoute("/_app/app/")({
 
 function RouteComponent() {
   const { documentations } = Route.useLoaderData();
+  const navigate = useNavigate();
 
   return (
     <main>
@@ -52,6 +53,7 @@ function RouteComponent() {
             <div className="grid grid-cols-3 gap-8 mt-16">
               {documentations.map((documentation) => (
                 <Link
+                  key={documentation.documentation.id}
                   to={
                     documentation.documentation.isGenerated
                       ? "/app/$documentationId"
@@ -78,16 +80,23 @@ function RouteComponent() {
                           <SolarLockKeyholeLinear className="size-4 text-default-400" />
                         )}
                         {documentation.documentation.isGenerated && (
-                          <Link
-                            to="/docs/$slug"
-                            params={{ slug: documentation.documentation.slug }}
-                            onClick={(e) => e.stopPropagation()}
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
+                              void navigate({
+                                to: "/docs/$slug",
+                                params: { slug: documentation.documentation.slug },
+                              });
+                            }}
                             className={cn(
                               buttonVariants({ variant: "ghost", size: "sm", isIconOnly: true }),
                             )}
+                            aria-label="View documentation"
                           >
                             <SolarEyeLinear className="size-4" />
-                          </Link>
+                          </button>
                         )}
                       </div>
                     </div>
@@ -106,7 +115,9 @@ function RouteComponent() {
                       <div className="border border-warning/30 py-2 px-4 rounded-lg w-full flex gap-2">
                         <SolarRestartLinear className="size-4 mt-1 text-warning" />
                         <div className="flex flex-col">
-                          <span className="font-semibold -tracking-wider text-warning">Cancelled</span>
+                          <span className="font-semibold -tracking-wider text-warning">
+                            Cancelled
+                          </span>
                           <span className="text-sm">Click to retry</span>
                         </div>
                       </div>
