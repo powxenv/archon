@@ -1,5 +1,4 @@
 import { marked } from "marked";
-import DOMPurify from "isomorphic-dompurify";
 
 marked.setOptions({
   breaks: true,
@@ -26,6 +25,5 @@ marked.use({
 });
 
 export function renderMarkdown(content: string): string {
-  const html = marked.parse(content) as string;
-  return DOMPurify.sanitize(html);
+  return marked.parse(content) as string;
 }
