@@ -27,7 +27,26 @@ export const Route = createFileRoute("/docs/$slug/")({
       return { slug: params.slug, hasPages: false };
     }
 
-    const firstPage = result.pages[0];
+    const rootPage = result.pages.find(
+      (p: { type: string; parentId: string | null }) => p.type === "page" && !p.parentId,
+    );
+
+    let firstPage = rootPage;
+    if (!firstPage) {
+      const firstGroup = result.pages.find(
+        (p: { type: string }) => p.type === "group",
+      );
+      if (firstGroup) {
+        firstPage = result.pages.find(
+          (p: { type: string; parentId: string | null }) => p.type === "page" && p.parentId === firstGroup.id,
+        );
+      }
+    }
+
+    if (!firstPage) {
+      return { slug: params.slug, hasPages: false };
+    }
+
     throw redirect({
       to: "/docs/$slug/$pageSlug",
       params: {

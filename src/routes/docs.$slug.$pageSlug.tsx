@@ -95,11 +95,14 @@ function RouteComponent() {
   useEffect(() => {
     if (contentRef.current) {
       contentRef.current.scrollTo({ top: 0, behavior: "smooth" });
-    }
 
-    mermaid.initialize({ startOnLoad: false, theme: "default", suppressErrorRendering: true });
-    void mermaid.run({ querySelector: ".mermaid" });
-    hljs.highlightAll();
+      mermaid.initialize({ startOnLoad: false, theme: "default", suppressErrorRendering: true });
+      void mermaid.run({ querySelector: ".mermaid" });
+
+      contentRef.current.querySelectorAll("pre code").forEach((el) => {
+        hljs.highlightElement(el as HTMLElement);
+      });
+    }
   }, [page.id]);
 
   const rootPages = pages.filter((p) => p.type === "page" && !p.parentId);
