@@ -33,13 +33,13 @@ async def run_test():
         # -> Navigate to http://localhost:7162
         await page.goto("http://localhost:7162")
         
-        # -> Click the 'Sign In' link to open the authentication page.
+        # -> Open the sign-in form by clicking the 'Sign In' link in the header.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/header/div/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the email field with testsprite@test.com, fill the password field with the provided password, then submit the sign-in form.
+        # -> Enter the email and password into the sign-in form and submit it.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -55,7 +55,7 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the email field (index 504) with testsprite@test.com, fill the password field (index 509) with the provided password, then submit the sign-in form by clicking the Sign In button (index 510).
+        # -> Fill the email and password fields with the provided credentials and click the Sign In button, then wait for the dashboard to load and verify documentation project cards with status indicators.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -71,7 +71,7 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the email and password fields correctly and submit the sign-in form (click Sign In), then verify the dashboard displays documentation project cards with status indicators.
+        # -> Fill the Email and Password fields and submit the Sign In form, then wait for the dashboard to load and verify documentation project cards with status indicators.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -87,22 +87,31 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the Sign In button to submit credentials, then wait for the dashboard to load so we can verify documentation project cards with status indicators.
+        # -> Click the Sign In button to submit the credentials, then wait for the dashboard to load and verify documentation project cards with status indicators.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Open App' button to open the authentication/sign-in flow so credentials can be entered and submitted.
+        # -> Fill the Email and Password fields with the provided credentials and click the Sign In button to submit the form.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('testsprite@test.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[2]/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
+        
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/header/div/nav/button/button').nth(0)
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # --> Test passed — verified by AI agent
+        # --> Assertions to verify final state
         frame = context.pages[-1]
-        current_url = await frame.evaluate("() => window.location.href")
-        assert current_url is not None, "Test completed successfully"
+        assert await frame.locator("xpath=//*[contains(., 'View Documentation')]").nth(0).is_visible(), "The dashboard should display View Documentation on documentation project cards after sign-in"
         await asyncio.sleep(5)
 
     finally:

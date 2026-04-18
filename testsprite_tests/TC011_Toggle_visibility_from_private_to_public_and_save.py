@@ -33,13 +33,13 @@ async def run_test():
         # -> Navigate to http://localhost:7162
         await page.goto("http://localhost:7162")
         
-        # -> Open the Sign In / auth page by clicking the 'Sign In' link.
+        # -> Open the Sign In form by clicking the 'Sign In' link.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/header/div/nav/a[2]').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the email and password fields and submit the Sign In form.
+        # -> Fill the Email and Password fields with the provided credentials and click the Sign In button to authenticate.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -55,7 +55,7 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Submit the sign-in form by filling email and password and clicking 'Sign In'.
+        # -> Fill the Email and Password fields with the provided credentials and click the Sign In button to authenticate.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -71,7 +71,37 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Submit the sign-in form by entering the provided credentials and clicking the 'Sign In' button.
+        # -> Try an alternate path: navigate to the dashboard page to see whether the app is accessible or redirects back to auth (this will reveal whether authentication can proceed or if the test is blocked).
+        await page.goto("http://localhost:7162/dashboard")
+        
+        # -> Click the 'Go back home' link to return to the homepage and continue via the app UI.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/a').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the 'Go back home' button to return to the homepage so we can continue through the app UI.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Click the 'Go back home' link to return to the homepage so we can open the Sign In form and attempt authentication again.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div[9]/div/div/div[2]/a').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Open the Sign In form from the homepage header (click the 'Sign In' link) so I can re-attempt authentication or observe the sign-in UI.
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/header/div/nav/a[2]').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Navigate to the explicit auth page (/auth) to reach the sign-in UI and then proceed with entering credentials.
+        await page.goto("http://localhost:7162/auth")
+        
+        # -> Fill the Email and Password fields with the provided credentials and click the Sign In button to authenticate.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -87,52 +117,19 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Click the 'Sign In' button to submit the credentials and sign in, then verify the dashboard loads and open project settings.
+        # -> Try to remove any overlay that may be blocking the Sign In control (close TanStack Devtools), then submit the sign-in form using the keyboard (Enter) to see if authentication succeeds.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
+        elem = frame.locator('xpath=/html/body/div[2]/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Open the app/dashboard so we can locate an existing documentation project (click the 'Open App' button).
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/header/div/nav/button/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
+        # -> Close the TanStack Devtools overlay, then navigate to /auth so I can retry signing in (enter credentials and submit) without the overlay interfering.
+        await page.goto("http://localhost:7162/auth")
         
-        # -> Click the user menu button to reveal the Dashboard link so we can open the Dashboard listing.
+        # -> Return to the homepage by clicking the 'Archon' link so I can reopen the Sign In flow (and try to remove/avoid the devtools overlay). Immediate action: click the 'Archon' link.
         frame = context.pages[-1]
         # Click element
-        elem = frame.locator('xpath=/html/body/header/div/nav/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the user menu button to reveal the Dashboard link so we can open the Dashboard listing and access a project's settings.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/header/div/nav/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the Dashboard menu item to open the dashboard listing so we can locate a documentation project to edit the visibility.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/div[4]/div/div[2]/section/div').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Open the user menu to reveal the Dashboard link so we can navigate to the dashboard listing and access a project's settings.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/header/div/nav/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the user menu (Open App / profile button) to reveal the Dashboard link so the dashboard listing can be opened.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/header/div/nav/button').nth(0)
-        await asyncio.sleep(3); await elem.click()
-        
-        # -> Click the user menu button to reveal the Dashboard link so the dashboard listing can be opened.
-        frame = context.pages[-1]
-        # Click element
-        elem = frame.locator('xpath=/html/body/header/div/nav/button').nth(0)
+        elem = frame.locator('xpath=/html/body/header/div/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
         # --> Assertions to verify final state

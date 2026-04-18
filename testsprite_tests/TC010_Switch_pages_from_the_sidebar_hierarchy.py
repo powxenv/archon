@@ -33,13 +33,13 @@ async def run_test():
         # -> Navigate to http://localhost:7162
         await page.goto("http://localhost:7162")
         
-        # -> Click the call-to-action link to view a sample or published documentation page.
+        # -> Click the 'Get Started' call-to-action to open a sample or published documentation page so the sidebar and viewer are shown.
         frame = context.pages[-1]
         # Click element
         elem = frame.locator('xpath=/html/body/main/div/section/div/a').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the Email and Password fields and click 'Sign In' to authenticate so we can access the documentation viewer and sidebar.
+        # -> Sign in using provided credentials so the app shows the documentation sidebar and viewer.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -55,7 +55,7 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the Email and Password fields and click 'Sign In' to authenticate so we can access the documentation viewer.
+        # -> Fill the Sign In form with the provided credentials and submit it so the app shows the documentation sidebar and viewer.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -71,7 +71,23 @@ async def run_test():
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
         await asyncio.sleep(3); await elem.click()
         
-        # -> Fill the Email and Password fields with the provided credentials and click the 'Sign In' button to authenticate.
+        # -> Fill the Email and Password fields on the Sign In form and submit the form (click Sign In) to attempt authentication, then observe whether the documentation sidebar/viewer appears.
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('testsprite@test.com')
+        
+        frame = context.pages[-1]
+        # Input text
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div[2]/div/input').nth(0)
+        await asyncio.sleep(3); await elem.fill('VcsK%50P5CX3Ft^TPGv!')
+        
+        frame = context.pages[-1]
+        # Click element
+        elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/button').nth(0)
+        await asyncio.sleep(3); await elem.click()
+        
+        # -> Fill the Email and Password fields and submit the Sign In form by clicking the Sign In button, then wait for the app to navigate to the documentation sidebar/viewer.
         frame = context.pages[-1]
         # Input text
         elem = frame.locator('xpath=/html/body/main/div/div/div/div[2]/div[2]/form/div/div/div/input').nth(0)
@@ -89,8 +105,8 @@ async def run_test():
         
         # --> Assertions to verify final state
         frame = context.pages[-1]
-        assert await frame.locator("xpath=//*[contains(., 'Introduction')]").nth(0).is_visible(), "The viewer should display the content for the most recently selected page after selecting it from the sidebar."
-        assert await frame.locator("xpath=//*[contains(., 'Contents')]").nth(0).is_visible(), "The sidebar should remain visible for continued navigation after selecting pages."]}
+        assert await frame.locator("xpath=//*[contains(., 'Introduction')]").nth(0).is_visible(), "The viewer should display the Introduction page content after selecting it from the sidebar"
+        assert await frame.locator("xpath=//*[contains(., 'Table of contents')]").nth(0).is_visible(), "The sidebar should remain visible for continued navigation after selecting pages"
         await asyncio.sleep(5)
 
     finally:
