@@ -11,10 +11,8 @@ export const Route = createFileRoute(
   server: {
     handlers: {
       GET: async ({
-        request,
         params,
       }: {
-        request: Request;
         params: { skillName: string };
       }) => {
         const slug = skillNameToSlug(params.skillName);
@@ -27,7 +25,7 @@ export const Route = createFileRoute(
           return new Response("Not Found", { status: 404 });
         }
 
-        const baseUrl = new URL(request.url).origin;
+        const baseUrl = "https://archon.noval.me";
         const skillMd = buildSkillMarkdown(
           result.name,
           result.slug,

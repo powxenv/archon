@@ -13,8 +13,8 @@ export const Route = createFileRoute(
 )({
   server: {
     handlers: {
-      GET: async ({ request }: { request: Request }) => {
-        const baseUrl = new URL(request.url).origin;
+      GET: async () => {
+        const baseUrl = "https://archon.noval.me";
         const docs = await getPublicDocumentations();
 
         const validDocs = docs.filter((d) =>
