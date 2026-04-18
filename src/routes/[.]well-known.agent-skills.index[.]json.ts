@@ -52,7 +52,8 @@ export const Route = createFileRoute(
               pages,
               baseUrl,
             );
-            const digest = await sha256Hex(skillMd);
+            const skillMdBytes = new TextEncoder().encode(skillMd);
+            const digest = await sha256Hex(skillMdBytes);
 
             return {
               name: skillName,

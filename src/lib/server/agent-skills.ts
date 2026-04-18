@@ -200,8 +200,10 @@ export function buildSkillMarkdown(
   return lines.join("\n");
 }
 
-export async function sha256Hex(content: string): Promise<string> {
-  const data = new TextEncoder().encode(content);
+export async function sha256Hex(content: string | Uint8Array): Promise<string> {
+  const data = typeof content === "string" 
+    ? new TextEncoder().encode(content)
+    : content;
   const hash = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(hash))
     .map((b) => b.toString(16).padStart(2, "0"))
