@@ -1,4 +1,5 @@
 import { marked } from "marked";
+import hljs from "highlight.js";
 
 marked.setOptions({
   breaks: true,
@@ -17,9 +18,18 @@ function escapeHtml(text: string): string {
 marked.use({
   renderer: {
     code: function ({ text: code, lang }) {
-      const escaped = escapeHtml(code);
-      if (lang === "mermaid") return `<pre class="mermaid">${escaped}</pre>`;
-      return `<pre><code class="language-${lang}">${escaped}</code></pre>`;
+      if (lang === "mermaid") {
+        const escaped = escapeHtml(code);
+        return `<pre class="mermaid">${escaped}</pre>`;
+      }
+
+      if (lang && hljs.getLanguage(lang)) {
+        const highlighted = hljs.highlight(code, { language: lang }).value;
+        return `<pre><code class="hljs language-${escapeHtml(lang)}">${highlighted}</code></pre>`;
+      }
+
+      const highlighted = hljs.highlightAuto(code).value;
+      return `<pre><code class="hljs">${highlighted}</code></pre>`;
     },
   },
 });

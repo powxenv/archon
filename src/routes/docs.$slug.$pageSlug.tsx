@@ -20,8 +20,6 @@ import SolarCheckReadLinear from "~icons/solar/check-read-linear";
 import { MarkdownContent } from "#/components/markdown-content";
 import { Fragment, useCallback, useEffect, useRef, useState } from "react";
 import mermaid from "mermaid";
-import hljs from "highlight.js";
-import "highlight.js/styles/github.min.css";
 
 export const Route = createFileRoute("/docs/$slug/$pageSlug")({
   loader: async ({ params }) => {
@@ -98,10 +96,6 @@ function RouteComponent() {
 
       mermaid.initialize({ startOnLoad: false, theme: "default", suppressErrorRendering: true });
       void mermaid.run({ querySelector: ".mermaid" });
-
-      contentRef.current.querySelectorAll("pre code").forEach((el) => {
-        hljs.highlightElement(el as HTMLElement);
-      });
     }
   }, [page.id]);
 
