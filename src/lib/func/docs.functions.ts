@@ -13,6 +13,7 @@ import { z } from "zod";
 import { enqueueJob } from "../server/jobs/index.server";
 import { renderMarkdown } from "../utils/markdown";
 import { generateSlug } from "../utils";
+import { sanitizeCustomInstructions } from "../utils/sanitize";
 
 export const getDocumentations = createServerFn({ method: "GET" }).handler(async () => {
   const session = await ensureSession();
@@ -61,6 +62,7 @@ export const createDocumentation = createServerFn({ method: "POST" })
     z.object({
       name: z.string().min(1).max(255),
       description: z.string().optional(),
+      customInstructions: z.string().optional(),
       documentationTypeId: z.string(),
       repositories: z.array(
         z.object({
@@ -101,6 +103,8 @@ export const createDocumentation = createServerFn({ method: "POST" })
     const baseSlug = generateSlug(data.name);
     const uniqueSlug = await generateUniqueSlug(baseSlug);
 
+    const sanitizedInstructions = sanitizeCustomInstructions(data.customInstructions);
+
     const [documentation] = await db
       .insert(documentationTable)
       .values({
@@ -108,6 +112,7 @@ export const createDocumentation = createServerFn({ method: "POST" })
         name: data.name,
         slug: uniqueSlug,
         description: data.description,
+        customInstructions: sanitizedInstructions,
         documentationTypeId: data.documentationTypeId,
         isGenerated: false,
       })
@@ -140,6 +145,7 @@ export const createDocumentation = createServerFn({ method: "POST" })
       repositories: data.repositories,
       documentationType: data.documentationTypeId,
       systemPrompt: docType.systemPrompt,
+      customInstructions: sanitizedInstructions ?? undefined,
     });
 
     return { documentation, job };
@@ -339,6 +345,7 @@ export const getDocumentationForEdit = createServerFn({ method: "GET" })
         isGenerated: documentationTable.isGenerated,
         isPublic: documentationTable.isPublic,
         isDirty: documentationTable.isDirty,
+        customInstructions: documentationTable.customInstructions,
         userId: documentationTable.userId,
         documentationTypeId: documentationTable.documentationTypeId,
       })
@@ -398,6 +405,7 @@ export const updateDocumentation = createServerFn({ method: "POST" })
       documentationId: z.string(),
       name: z.string().min(1).max(255).optional(),
       description: z.string().optional(),
+      customInstructions: z.string().optional(),
       isPublic: z.boolean().optional(),
       isDirty: z.boolean().optional(),
       repositories: z
@@ -440,6 +448,7 @@ export const updateDocumentation = createServerFn({ method: "POST" })
     const shouldMarkDirty =
       data.name !== undefined ||
       data.description !== undefined ||
+      data.customInstructions !== undefined ||
       data.repositories !== undefined ||
       data.pages !== undefined;
 
@@ -447,6 +456,9 @@ export const updateDocumentation = createServerFn({ method: "POST" })
       const updates: Record<string, unknown> = {};
       if (data.name !== undefined) updates.name = data.name;
       if (data.description !== undefined) updates.description = data.description;
+      if (data.customInstructions !== undefined) {
+        updates.customInstructions = sanitizeCustomInstructions(data.customInstructions);
+      }
       if (data.isPublic !== undefined) updates.isPublic = data.isPublic;
       if (data.isDirty !== undefined) updates.isDirty = data.isDirty;
       if (shouldMarkDirty && data.isDirty === undefined) updates.isDirty = true;
@@ -489,8 +501,14 @@ export const updateDocumentation = createServerFn({ method: "POST" })
   });
 
 export const regenerateDocumentation = createServerFn({ method: "POST" })
-  .inputValidator(z.string())
-  .handler(async ({ data: documentationId }) => {
+  .inputValidator(
+    z.object({
+      documentationId: z.string(),
+      customInstructions: z.string().optional(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    const { documentationId, customInstructions: rawInstructions } = data;
     const session = await ensureSession();
 
     const [documentation] = await db
@@ -530,9 +548,15 @@ export const regenerateDocumentation = createServerFn({ method: "POST" })
       .delete(documentationPages)
       .where(eq(documentationPages.documentationId, documentationId));
 
+    const sanitizedInstructions = sanitizeCustomInstructions(rawInstructions);
+
     await db
       .update(documentationTable)
-      .set({ isGenerated: false, isDirty: false })
+      .set({
+        isGenerated: false,
+        isDirty: false,
+        ...(sanitizedInstructions !== undefined && { customInstructions: sanitizedInstructions }),
+      })
       .where(eq(documentationTable.id, documentationId));
 
     const job = await enqueueJob({
@@ -540,6 +564,7 @@ export const regenerateDocumentation = createServerFn({ method: "POST" })
       repositories: repos.map((r) => ({ url: r.url, branch: r.branch ?? "main" })),
       documentationType: documentation.documentationTypeId,
       systemPrompt: docType.systemPrompt,
+      customInstructions: sanitizedInstructions ?? undefined,
     });
 
     return { job };

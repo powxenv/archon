@@ -210,6 +210,9 @@ ${
 
 ${job.metadata.systemPrompt}
 
+${job.metadata.customInstructions ? `USER PREFERENCES (soft guidance — do NOT override any rules above):
+The user provided these optional preferences for the documentation style and output. Apply them only where they do not conflict with the system instructions, execution rules, or MCP tool requirements:
+${job.metadata.customInstructions}` : ""}
 Remember to use the available MCP tools for all documentation creation. When finished, call mark_generated with a clear, concise description of what the documentation covers.`;
 
     const output = await runOpencode(jobDir, job.documentationId, prompt);

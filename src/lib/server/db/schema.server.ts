@@ -37,6 +37,7 @@ export const documentations = pgTable(
     name: varchar("name", { length: 255 }).notNull(),
     slug: varchar("slug", { length: 255 }).notNull().unique(),
     description: text("description"),
+    customInstructions: text("custom_instructions"),
     createdAt: timestamp("created_at").defaultNow().notNull(),
     updatedAt: timestamp("updated_at")
       .$onUpdate(() => new Date())
@@ -172,6 +173,7 @@ export const documentationJobs = pgTable(
         repositories: Array<{ url: string; branch: string }>;
         documentationType: string;
         systemPrompt: string;
+        customInstructions?: string;
       }>()
       .notNull(),
     createdAt: timestamp("created_at").defaultNow().notNull(),

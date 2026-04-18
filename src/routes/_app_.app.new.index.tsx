@@ -42,7 +42,7 @@ export const Route = createFileRoute("/_app_/app/new/")({
   component: RouteComponent,
 });
 
-type Step = "name" | "type" | "repos" | "branches";
+type Step = "name" | "type" | "repos" | "branches" | "instructions";
 
 function RouteComponent() {
   const { documentationTypes } = Route.useLoaderData();
@@ -56,6 +56,7 @@ function RouteComponent() {
   const [repoBranchOptions, setRepoBranchOptions] = useState<Record<number, string[]>>({});
   const [branchesLoading, setBranchesLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customInstructions, setCustomInstructions] = useState("");
   const { contains } = useFilter({ sensitivity: "base" });
 
   const validateRepoUrl = (url: string): string => {
@@ -116,6 +117,7 @@ function RouteComponent() {
           name,
           documentationTypeId: selectedType,
           repositories,
+          ...(customInstructions.trim() && { customInstructions: customInstructions.trim() }),
         },
       });
 
@@ -280,7 +282,38 @@ function RouteComponent() {
               onPress={fetchBranchesAndContinue}
               isDisabled={!allReposFilled || hasUrlErrors || branchesLoading}
             >
-              {branchesLoading ? <Spinner /> : "Next"}
+              {branchesLoading ? <Spinner className="text-white" /> : "Next"}
+            </Button>
+          </div>
+        </div>
+      </NewForm>
+    );
+  }
+
+  if (step === "branches") {
+    return (
+      <NewForm
+        title="Select Branches"
+        description="Pick the branch to document for each repository"
+        onBack={() => setStep("repos")}
+      >
+        <div className="mt-4 flex flex-col gap-4">
+          {repoUrls.map((url, index) => {
+            return (
+              <div key={index}>
+                <BranchAutocomplete
+                  repoUrl={url}
+                  options={repoBranchOptions[index] ?? []}
+                  selectedKey={branches[index] ?? null}
+                  onSelect={(key) => setBranches((prev) => ({ ...prev, [index]: key }))}
+                  filter={contains}
+                />
+              </div>
+            );
+          })}
+          <div className="flex justify-end">
+            <Button onPress={() => setStep("instructions")} isDisabled={!allBranchesSelected}>
+              Next
             </Button>
           </div>
         </div>
@@ -290,27 +323,30 @@ function RouteComponent() {
 
   return (
     <NewForm
-      title="Select Branches"
-      description="Pick the branch to document for each repository"
-      onBack={() => setStep("repos")}
+      title="Custom Instructions"
+      description="Optionally guide the AI on how to generate your documentation"
+      onBack={() => setStep("branches")}
     >
       <div className="mt-4 flex flex-col gap-4">
-        {repoUrls.map((url, index) => {
-          return (
-            <div key={index}>
-              <BranchAutocomplete
-                repoUrl={url}
-                options={repoBranchOptions[index] ?? []}
-                selectedKey={branches[index] ?? null}
-                onSelect={(key) => setBranches((prev) => ({ ...prev, [index]: key }))}
-                filter={contains}
-              />
-            </div>
-          );
-        })}
+        <TextField name="custom-instructions" variant="secondary">
+          <Label>Instructions (optional)</Label>
+          <InputGroup variant="secondary">
+            <InputGroup.TextArea
+              aria-label="Custom instructions"
+              placeholder="e.g. Focus on API endpoints, use TypeScript examples, include setup guides..."
+              rows={5}
+              className="resize-none"
+              value={customInstructions}
+              onChange={(e) => setCustomInstructions(e.target.value)}
+            />
+          </InputGroup>
+          <Description>
+            Soft guidance for the AI — tone, focus areas, or output preferences
+          </Description>
+        </TextField>
         <div className="flex justify-end">
-          <Button onPress={handleSubmit} isDisabled={!allBranchesSelected || isSubmitting}>
-            {isSubmitting ? <Spinner size="sm" /> : "Create Documentation"}
+          <Button onPress={handleSubmit} isDisabled={isSubmitting}>
+            {isSubmitting ? <Spinner className="text-white" /> : "Create Documentation"}
           </Button>
         </div>
       </div>

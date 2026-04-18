@@ -8,6 +8,7 @@ export type JobInput = {
   repositories: Array<{ url: string; branch: string }>;
   documentationType: string;
   systemPrompt: string;
+  customInstructions?: string;
 };
 
 export type JobStatus = DocumentationJob["status"];

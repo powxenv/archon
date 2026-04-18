@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Modal, Spinner } from "@heroui/react";
+import { Button, Description, InputGroup, Label, Modal, Spinner, TextField } from "@heroui/react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import NewForm from "#/components/new-form";
 import { getLatestJob, cancelDocumentationJob } from "#/lib/func/jobs.functions";
@@ -18,6 +18,8 @@ function RouteComponent() {
   const [regenerating, setRegenerating] = useState(false);
   const [cancelling, setCancelling] = useState(false);
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
+  const [regenerateStep, setRegenerateStep] = useState<"confirm" | "instructions">("confirm");
+  const [regenerateInstructions, setRegenerateInstructions] = useState("");
 
   const handleCancel = async () => {
     if (!job) return;
@@ -89,7 +91,14 @@ function RouteComponent() {
   const handleRegenerate = async () => {
     setRegenerating(true);
     try {
-      await regenerateDocumentation({ data: documentationId });
+      await regenerateDocumentation({
+        data: {
+          documentationId,
+          ...(regenerateInstructions.trim() && {
+            customInstructions: regenerateInstructions.trim(),
+          }),
+        },
+      });
       setJob(null);
       setLoading(true);
       setRegenerating(false);
@@ -152,7 +161,11 @@ function RouteComponent() {
                 )}
                 {(job?.status === "failed" || job?.status === "cancelled") && (
                   <Button
-                    onPress={() => setShowRegenerateConfirm(true)}
+                    onPress={() => {
+                      setRegenerateStep("confirm");
+                      setRegenerateInstructions("");
+                      setShowRegenerateConfirm(true);
+                    }}
                     isDisabled={regenerating}
                   >
                     {regenerating ? <Spinner size="sm" /> : "Regenerate"}
@@ -180,22 +193,47 @@ function RouteComponent() {
                 <Modal.Heading>Regenerate Documentation</Modal.Heading>
               </Modal.Header>
               <Modal.Body>
-                <p className="text-sm text-default-500">
-                  This will delete all existing documentation pages and restart the generation
-                  process from scratch. This action cannot be undone.
-                </p>
+                {regenerateStep === "confirm" ? (
+                  <p className="text-sm text-default-500">
+                    This will delete all existing documentation pages and restart the generation
+                    process from scratch. This action cannot be undone.
+                  </p>
+                ) : (
+                  <TextField name="regenerate-instructions" variant="secondary">
+                    <Label>Custom Instructions (optional)</Label>
+                    <InputGroup variant="secondary">
+                      <InputGroup.TextArea
+                        aria-label="Custom instructions for regeneration"
+                        placeholder="e.g. Focus on API endpoints, use TypeScript examples..."
+                        rows={4}
+                        className="resize-none"
+                        value={regenerateInstructions}
+                        onChange={(e) => setRegenerateInstructions(e.target.value)}
+                      />
+                    </InputGroup>
+                    <Description>
+                      Soft guidance for the AI — tone, focus areas, or output preferences
+                    </Description>
+                  </TextField>
+                )}
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="outline" onPress={() => setShowRegenerateConfirm(false)}>
                   Cancel
                 </Button>
-                <Button
-                  className="bg-danger text-danger-foreground"
-                  onPress={handleRegenerate}
-                  isDisabled={regenerating}
-                >
-                  {regenerating ? <Spinner size="sm" /> : "Regenerate"}
-                </Button>
+                {regenerateStep === "confirm" ? (
+                  <Button onPress={() => setRegenerateStep("instructions")}>
+                    Next
+                  </Button>
+                ) : (
+                  <Button
+                    className="bg-danger text-danger-foreground"
+                    onPress={handleRegenerate}
+                    isDisabled={regenerating}
+                  >
+                    {regenerating ? <Spinner size="sm" /> : "Regenerate"}
+                  </Button>
+                )}
               </Modal.Footer>
             </Modal.Dialog>
           </Modal.Container>

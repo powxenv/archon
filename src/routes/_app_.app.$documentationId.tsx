@@ -73,7 +73,9 @@ function EditDocumentationPage() {
   const [isPublic, setIsPublic] = useState(documentation.isPublic);
   const [togglingPublic, setTogglingPublic] = useState(false);
   const [showRegenerateConfirm, setShowRegenerateConfirm] = useState(false);
+  const [regenerateStep, setRegenerateStep] = useState<"confirm" | "instructions">("confirm");
   const [regenerating, setRegenerating] = useState(false);
+  const [regenerateInstructions, setRegenerateInstructions] = useState("");
 
   const form = useForm<EditValues>({
     resolver: zodResolver(editSchema),
@@ -125,7 +127,14 @@ function EditDocumentationPage() {
   const handleRegenerate = async () => {
     setRegenerating(true);
     try {
-      await regenerateDocumentation({ data: documentation.id });
+      await regenerateDocumentation({
+        data: {
+          documentationId: documentation.id,
+          ...(regenerateInstructions.trim() && {
+            customInstructions: regenerateInstructions.trim(),
+          }),
+        },
+      });
       void navigate({
         to: "/app/new/$documentationId/status",
         params: { documentationId: documentation.id },
@@ -138,7 +147,7 @@ function EditDocumentationPage() {
 
   return (
     <main>
-      <div className="inner border-x border-dashed min-h-lvh justify-center flex-col flex py-24 relative">
+      <div className="inner min-h-lvh justify-center flex-col flex py-24 relative">
         <div className="max-w-md w-full mx-auto border border-dashed p-1 rounded-2xl">
           <div className="border p-6 rounded-xl bg-surface shadow-xl shadow-black/6 max-h-[calc(100vh-10rem)] overflow-y-auto">
             <div className="flex items-center justify-between gap-2">
@@ -253,7 +262,11 @@ function EditDocumentationPage() {
                     )}
                     <Button
                       variant="outline"
-                      onPress={() => setShowRegenerateConfirm(true)}
+                      onPress={() => {
+                        setRegenerateStep("confirm");
+                        setRegenerateInstructions("");
+                        setShowRegenerateConfirm(true);
+                      }}
                       isDisabled={regenerating}
                     >
                       {regenerating ? (
@@ -283,22 +296,47 @@ function EditDocumentationPage() {
                 <Modal.Heading>Regenerate Documentation</Modal.Heading>
               </Modal.Header>
               <Modal.Body>
-                <p className="text-sm text-default-500">
-                  This will delete all existing documentation pages and restart the generation
-                  process from scratch. This action cannot be undone.
-                </p>
+                {regenerateStep === "confirm" ? (
+                  <p className="text-sm text-default-500">
+                    This will delete all existing documentation pages and restart the generation
+                    process from scratch. This action cannot be undone.
+                  </p>
+                ) : (
+                  <TextField name="regenerate-instructions" variant="secondary">
+                    <Label>Custom Instructions (optional)</Label>
+                    <InputGroup variant="secondary">
+                      <InputGroup.TextArea
+                        aria-label="Custom instructions for regeneration"
+                        placeholder="e.g. Focus on API endpoints, use TypeScript examples..."
+                        rows={4}
+                        className="resize-none"
+                        value={regenerateInstructions}
+                        onChange={(e) => setRegenerateInstructions(e.target.value)}
+                      />
+                    </InputGroup>
+                    <Description>
+                      Soft guidance for the AI — tone, focus areas, or output preferences
+                    </Description>
+                  </TextField>
+                )}
               </Modal.Body>
               <Modal.Footer>
                 <Button variant="outline" onPress={() => setShowRegenerateConfirm(false)}>
                   Cancel
                 </Button>
-                <Button
-                  className="bg-danger text-danger-foreground"
-                  onPress={handleRegenerate}
-                  isDisabled={regenerating}
-                >
-                  {regenerating ? <Spinner size="sm" /> : "Regenerate"}
-                </Button>
+                {regenerateStep === "confirm" ? (
+                  <Button onPress={() => setRegenerateStep("instructions")}>
+                    Next
+                  </Button>
+                ) : (
+                  <Button
+                    className="bg-danger text-danger-foreground"
+                    onPress={handleRegenerate}
+                    isDisabled={regenerating}
+                  >
+                    {regenerating ? <Spinner size="sm" /> : "Regenerate"}
+                  </Button>
+                )}
               </Modal.Footer>
             </Modal.Dialog>
           </Modal.Container>
