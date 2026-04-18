@@ -6,7 +6,49 @@ import SolarDocumentLineDuotone from "~icons/solar/document-line-duotone";
 import SolarStarsLineLineDuotone from "~icons/solar/stars-line-line-duotone";
 import SolarUsersGroupTwoRoundedLineDuotone from "~icons/solar/users-group-two-rounded-line-duotone";
 
-export const Route = createFileRoute("/_app/")({ component: App });
+export const Route = createFileRoute("/_app/")({
+  head: () => ({
+    meta: [
+      { title: "Archon — AI-Powered Documentation Platform" },
+      {
+        name: "description",
+        content:
+          "Turn any codebase into clear, structured documentation. Archon analyzes your repositories and generates technical docs, onboarding guides, and user documentation.",
+      },
+      {
+        property: "og:title",
+        content: "Archon — AI-Powered Documentation Platform",
+      },
+      {
+        property: "og:description",
+        content:
+          "Turn any codebase into clear, structured documentation. AI-generated technical docs, onboarding guides, and user documentation.",
+      },
+      { property: "og:type", content: "website" },
+      {
+        property: "og:image",
+        content: "https://archon.noval.me/logo512.png",
+      },
+      { name: "twitter:card", content: "summary_large_image" },
+      {
+        name: "twitter:title",
+        content: "Archon — AI-Powered Documentation Platform",
+      },
+      {
+        name: "twitter:description",
+        content:
+          "Turn any codebase into clear, structured documentation with AI.",
+      },
+    ],
+    links: [
+      {
+        rel: "canonical",
+        href: "https://archon.noval.me/",
+      },
+    ],
+  }),
+  component: App,
+});
 
 function App() {
   return (

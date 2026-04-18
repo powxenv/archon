@@ -50,6 +50,40 @@ export const Route = createFileRoute("/docs/$slug/$pageSlug")({
 
     return result;
   },
+  head: ({ loaderData }) => {
+    if (!loaderData) {
+      return { meta: [], links: [] };
+    }
+
+    const docName = loaderData.documentation.name;
+    const pageTitle = loaderData.page.title;
+    const description =
+      loaderData.documentation.description ??
+      `Documentation for ${docName}`;
+    const title = `${pageTitle} — ${docName}`;
+    const url = `https://archon.noval.me/docs/${loaderData.documentation.slug}/${loaderData.page.slug}`;
+
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description.slice(0, 160) },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description.slice(0, 200) },
+        { property: "og:type", content: "article" },
+        { property: "og:url", content: url },
+        { property: "og:image", content: "https://archon.noval.me/logo512.png" },
+        { name: "twitter:card", content: "summary" },
+        { name: "twitter:title", content: title },
+        { name: "twitter:description", content: description.slice(0, 200) },
+      ],
+      links: [
+        {
+          rel: "canonical",
+          href: url,
+        },
+      ],
+    };
+  },
   component: RouteComponent,
 });
 
