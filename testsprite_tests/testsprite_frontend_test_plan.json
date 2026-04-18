@@ -1,0 +1,1068 @@
+[
+  {
+    "id": "TC001",
+    "title": "Sign in with email/password to reach dashboard",
+    "description": "Verifies an existing user can sign in with email/password and is redirected to the documentation dashboard.",
+    "category": "User Authentication (email/password)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC002",
+    "title": "Successful generation completes and opens generated documentation",
+    "description": "Verifies the generation status view updates to a success terminal state and allows navigating to the generated documentation viewer.",
+    "category": "Generation Status Tracking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to start creating a new documentation project"
+      },
+      {
+        "type": "action",
+        "description": "Complete the wizard with a valid name, type, one HTTPS repository, and a selected branch"
+      },
+      {
+        "type": "action",
+        "description": "Submit the wizard to start generation"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the generation status to reach a success state"
+      },
+      {
+        "type": "action",
+        "description": "Open the generated documentation from the success state"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a documentation page viewer is displayed with page content and navigation"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC003",
+    "title": "View a documentation page with navigation and rendered content",
+    "description": "Verifies a public reader can open a published documentation page and see the sidebar navigation and rendered page content with expected rich rendering.",
+    "category": "View Documentation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the call-to-action link to view a sample or published documentation page"
+      },
+      {
+        "type": "action",
+        "description": "Select a page from the documentation sidebar"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the documentation sidebar with a hierarchical list of pages and groups is displayed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the selected documentation page content is rendered and includes rich formatting such as code highlighting and/or diagrams when present"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC004",
+    "title": "View projects grid with status indicators",
+    "description": "Verifies an authenticated user can load the dashboard and see documentation project cards with status indicators.",
+    "category": "Documentation Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify documentation project cards with status indicators are displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC005",
+    "title": "Create documentation wizard happy path to status page",
+    "description": "Verifies an authenticated user can complete all steps of the creation wizard and is redirected to the generation status page after submitting.",
+    "category": "Create Documentation (multi-step wizard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to start creating a new documentation project"
+      },
+      {
+        "type": "action",
+        "description": "Fill a unique documentation name into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Select a documentation type"
+      },
+      {
+        "type": "action",
+        "description": "Add a valid HTTPS repository URL"
+      },
+      {
+        "type": "action",
+        "description": "Select a branch for the repository"
+      },
+      {
+        "type": "action",
+        "description": "Fill optional custom AI instructions into the instructions field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the wizard to create the documentation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the generation status view for the new documentation is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC006",
+    "title": "Start sign-up from landing CTA and reach documentation creation wizard",
+    "description": "Verifies a visitor can navigate from the landing page through the auth page and, after successful sign-up, reach the dashboard empty state and start the new documentation wizard.",
+    "category": "Create Documentation (multi-step wizard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the call-to-action to start using the product"
+      },
+      {
+        "type": "action",
+        "description": "On the auth page, switch to the sign-up form"
+      },
+      {
+        "type": "action",
+        "description": "Fill a whitelisted-domain email into the email field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a valid password into the password field"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-up form"
+      },
+      {
+        "type": "action",
+        "description": "Click the empty-state call-to-action to create new documentation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the documentation creation wizard is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC007",
+    "title": "Sign up with whitelisted domain and valid password",
+    "description": "Verifies a visitor can create an account using a whitelisted email domain and a valid password and is redirected to the dashboard.",
+    "category": "User Authentication (email/password)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the sign-up form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with a unique whitelisted-domain email address"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with a valid-length password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-up form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the user lands on the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC008",
+    "title": "Edit documentation metadata and see updates reflected on dashboard",
+    "description": "Verifies an authenticated user can edit a documentation project's name and description in settings, save, and see the updated metadata reflected back on the dashboard.",
+    "category": "Edit Documentation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Open documentation settings for a project from the dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Fill a new documentation name into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Fill a new description into the description field"
+      },
+      {
+        "type": "action",
+        "description": "Save changes"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation control to return to the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the dashboard shows the documentation project with the updated name"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC009",
+    "title": "Start new documentation from dashboard empty state",
+    "description": "Verifies an authenticated user with no projects can use the dashboard empty-state call-to-action to start the creation wizard.",
+    "category": "Documentation Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the empty-state action to create a new documentation project"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the new documentation wizard is displayed"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC010",
+    "title": "Switch pages from the sidebar hierarchy",
+    "description": "Verifies a reader can select multiple pages from the sidebar hierarchy and the viewer updates to the chosen page each time.",
+    "category": "View Documentation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the call-to-action link to view a sample or published documentation page"
+      },
+      {
+        "type": "action",
+        "description": "Select a page from the sidebar near the top of the list"
+      },
+      {
+        "type": "action",
+        "description": "Select a different page from the sidebar farther down the list"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the viewer displays the content for the most recently selected page"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the sidebar remains visible for continued navigation"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC011",
+    "title": "Toggle visibility from private to public and save",
+    "description": "Verifies an authenticated user can change a documentation project's visibility to public, save, and see the visibility indicator updated.",
+    "category": "Edit Documentation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Open documentation settings for a project from the dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Toggle visibility from private to public"
+      },
+      {
+        "type": "action",
+        "description": "Save changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the visibility indicator shows the project is public"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC012",
+    "title": "Cancel generation from status page reaches cancelled terminal state",
+    "description": "Verifies an authenticated user can cancel a running generation and sees the cancelled terminal state on the status page.",
+    "category": "Generation Status Tracking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to start creating a new documentation project"
+      },
+      {
+        "type": "action",
+        "description": "Complete the wizard with a valid name, type, one HTTPS repository, and a selected branch"
+      },
+      {
+        "type": "action",
+        "description": "Submit the wizard to start generation"
+      },
+      {
+        "type": "action",
+        "description": "Wait for the generation status to show it is running"
+      },
+      {
+        "type": "action",
+        "description": "Cancel the generation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the generation status shows a cancelled terminal state"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC013",
+    "title": "Owner sees an Edit action on documentation page after logging in",
+    "description": "Verifies an authenticated documentation owner can view a documentation page and see an Edit action available in the viewer.",
+    "category": "View Documentation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click a documentation project from the dashboard to open its documentation viewer"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an Edit action is visible in the documentation viewer for the owner"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC014",
+    "title": "Delete documentation from settings removes it from dashboard list",
+    "description": "Verifies an authenticated user can delete a documentation project with confirmation and it no longer appears on the dashboard.",
+    "category": "Edit Documentation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to start creating a new documentation project"
+      },
+      {
+        "type": "action",
+        "description": "Complete the wizard with a valid name, type, one HTTPS repository, and a selected branch"
+      },
+      {
+        "type": "action",
+        "description": "Submit the wizard to create the documentation"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation control to return to the dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Open documentation settings for the newly created project from the dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Choose to delete the documentation"
+      },
+      {
+        "type": "action",
+        "description": "Confirm deletion in the app confirmation UI"
+      },
+      {
+        "type": "action",
+        "description": "Click the navigation control to return to the dashboard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the deleted documentation project is no longer listed on the dashboard"
+      }
+    ],
+    "priority": "High"
+  },
+  {
+    "id": "TC015",
+    "title": "Navigate sequentially using previous and next links",
+    "description": "Verifies a reader can move through the documentation sequentially using previous/next navigation and the displayed page updates accordingly.",
+    "category": "View Documentation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the call-to-action link to view a sample or published documentation page"
+      },
+      {
+        "type": "action",
+        "description": "Click the next page navigation control"
+      },
+      {
+        "type": "action",
+        "description": "Click the previous page navigation control"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the documentation viewer updates to show a different page after sequential navigation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the sidebar highlights the currently displayed page"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC016",
+    "title": "Retry a failed generation from dashboard",
+    "description": "Verifies an authenticated user can trigger a retry for a failed documentation project from the dashboard and the project shows an in-progress state.",
+    "category": "Documentation Dashboard",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the refresh or retry action on a documentation project that is marked as failed"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the project status updates away from failed to an in-progress state"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC017",
+    "title": "Regenerate after failure with updated instructions returns to running state",
+    "description": "Verifies a failed generation can be regenerated by providing updated instructions and the status transitions back to pending or running.",
+    "category": "Generation Status Tracking",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Navigate to the dashboard documentation card that is in a failed generation state"
+      },
+      {
+        "type": "action",
+        "description": "Open the generation status view for that documentation"
+      },
+      {
+        "type": "action",
+        "description": "Choose to regenerate"
+      },
+      {
+        "type": "action",
+        "description": "Fill updated custom AI instructions into the regenerate instructions field"
+      },
+      {
+        "type": "action",
+        "description": "Confirm starting regeneration"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the generation status indicates the documentation is pending or running"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC018",
+    "title": "Owner can navigate from docs viewer to edit settings",
+    "description": "Verifies an authenticated owner can use the Edit action in the documentation viewer to reach the documentation settings/edit experience.",
+    "category": "View Documentation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click a documentation project from the dashboard to open its documentation viewer"
+      },
+      {
+        "type": "action",
+        "description": "Click the Edit action"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the documentation settings or editing interface is displayed for the selected documentation"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC019",
+    "title": "Create documentation with multiple repositories and branch selection per repo",
+    "description": "Verifies an authenticated user can add multiple HTTPS repositories, select a branch for each, and submit successfully to reach the generation status page.",
+    "category": "Create Documentation (multi-step wizard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to start creating a new documentation project"
+      },
+      {
+        "type": "action",
+        "description": "Fill a unique documentation name into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Select a documentation type"
+      },
+      {
+        "type": "action",
+        "description": "Add a valid HTTPS repository URL"
+      },
+      {
+        "type": "action",
+        "description": "Add a second valid HTTPS repository URL"
+      },
+      {
+        "type": "action",
+        "description": "Select a branch for the first repository"
+      },
+      {
+        "type": "action",
+        "description": "Select a branch for the second repository"
+      },
+      {
+        "type": "action",
+        "description": "Submit the wizard to create the documentation"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the generation status view for the new documentation is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC020",
+    "title": "Update repositories and branches in documentation settings",
+    "description": "Verifies an authenticated user can add or remove repository URLs, select branches for repositories, and save the updated repository configuration.",
+    "category": "Edit Documentation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Open documentation settings for a project from the dashboard"
+      },
+      {
+        "type": "action",
+        "description": "Add a valid HTTPS repository URL in the repositories section"
+      },
+      {
+        "type": "action",
+        "description": "Select a branch for the newly added repository"
+      },
+      {
+        "type": "action",
+        "description": "Remove one existing repository from the list"
+      },
+      {
+        "type": "action",
+        "description": "Save changes"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the repositories section shows the updated repository list"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC021",
+    "title": "Navigate landing content and start authentication",
+    "description": "Verifies a visitor can view the landing page sections and use the call-to-action to reach the authentication page.",
+    "category": "Landing Page",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the feature cards section"
+      },
+      {
+        "type": "action",
+        "description": "Scroll to the how-it-works section"
+      },
+      {
+        "type": "action",
+        "description": "Click the call-to-action to get started"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify the authentication page is displayed"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC022",
+    "title": "Wizard blocks submit when documentation name is missing",
+    "description": "Verifies the wizard requires a documentation name and shows a validation error when attempting to submit without it.",
+    "category": "Create Documentation (multi-step wizard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to start creating a new documentation project"
+      },
+      {
+        "type": "action",
+        "description": "Leave the documentation name field empty"
+      },
+      {
+        "type": "action",
+        "description": "Select a documentation type"
+      },
+      {
+        "type": "action",
+        "description": "Add a valid HTTPS repository URL"
+      },
+      {
+        "type": "action",
+        "description": "Select a branch for the repository"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to submit the wizard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a name-required validation error is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC023",
+    "title": "Block sign up with non-whitelisted email domain",
+    "description": "Verifies sign-up is prevented when using an email address from a non-whitelisted domain and a validation error is shown.",
+    "category": "User Authentication (email/password)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the sign-up form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with a non-whitelisted-domain email address"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with a valid-length password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-up form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an email domain validation error is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC024",
+    "title": "Wizard rejects non-HTTPS repository URL",
+    "description": "Verifies the wizard enforces HTTPS-only repository URLs by showing a validation error and preventing progress with a non-HTTPS URL.",
+    "category": "Create Documentation (multi-step wizard)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with {{LOGIN_USER}}"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with {{LOGIN_PASSWORD}}"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-in form"
+      },
+      {
+        "type": "action",
+        "description": "Click the control to start creating a new documentation project"
+      },
+      {
+        "type": "action",
+        "description": "Fill a unique documentation name into the name field"
+      },
+      {
+        "type": "action",
+        "description": "Select a documentation type"
+      },
+      {
+        "type": "action",
+        "description": "Add a repository URL using a non-HTTPS scheme into the repository URL field"
+      },
+      {
+        "type": "action",
+        "description": "Attempt to proceed to branch selection or submit the wizard"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a repository URL validation error indicating HTTPS is required is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC025",
+    "title": "Block sign up with too-short password",
+    "description": "Verifies sign-up is prevented when the password does not meet minimum length requirements and a validation error is shown.",
+    "category": "User Authentication (email/password)",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /auth"
+      },
+      {
+        "type": "action",
+        "description": "Switch to the sign-up form"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the email field with a unique whitelisted-domain email address"
+      },
+      {
+        "type": "action",
+        "description": "Fill in the password field with a too-short password"
+      },
+      {
+        "type": "action",
+        "description": "Submit the sign-up form"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify a password length validation error is visible"
+      }
+    ],
+    "priority": "Medium"
+  },
+  {
+    "id": "TC026",
+    "title": "Open Ask AI action from a documentation page",
+    "description": "Verifies a reader can invoke the Ask AI action from a documentation page and is taken to the app’s outbound prompt handoff flow.",
+    "category": "View Documentation",
+    "steps": [
+      {
+        "type": "action",
+        "description": "Navigate to /"
+      },
+      {
+        "type": "action",
+        "description": "Click the call-to-action link to view a sample or published documentation page"
+      },
+      {
+        "type": "action",
+        "description": "Click the Ask AI action"
+      },
+      {
+        "type": "assertion",
+        "description": "Verify an outbound AI handoff UI is shown (such as a platform selection or a prompt preview)"
+      }
+    ],
+    "priority": "Low"
+  }
+]

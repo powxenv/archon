@@ -1,0 +1,181 @@
+version: "2"
+type: frontend
+tech_stack:
+  - TypeScript
+  - React 19
+  - TanStack Start
+  - TanStack Router
+  - TanStack Query
+  - HeroUI
+  - Tailwind CSS v4
+  - Better-auth
+  - Drizzle ORM
+  - PostgreSQL (Neon)
+  - Vite
+routes:
+  - path: /
+    file: src/routes/_app.index.tsx
+    auth_required: false
+    description: Marketing landing page with hero section, feature cards, and how-it-works section
+  - path: /auth
+    file: src/routes/auth.index.tsx
+    auth_required: false
+    description: Sign in and sign up page with email/password and GitHub OAuth
+  - path: /auth/error
+    file: src/routes/auth.error.index.tsx
+    auth_required: false
+    description: Authentication error display page
+  - path: /app
+    file: src/routes/_app.app.index.tsx
+    auth_required: true
+    description: Dashboard showing user documentation projects in a grid with status indicators
+  - path: /app/new
+    file: src/routes/_app_.app.new.index.tsx
+    auth_required: true
+    description: Multi-step wizard to create new documentation with name, type, repos, branches, and instructions
+  - path: /app/new/$documentationId/status
+    file: src/routes/_app_.app.new.$documentationId.status.tsx
+    auth_required: true
+    description: Real-time documentation generation status with polling, cancel, and regenerate options
+  - path: /app/$documentationId
+    file: src/routes/_app_.app.$documentationId.tsx
+    auth_required: true
+    description: Edit documentation settings, manage repositories, toggle visibility, regenerate or delete
+  - path: /docs/$slug
+    file: src/routes/docs.$slug.index.tsx
+    auth_required: false
+    description: Documentation root that redirects to first page
+  - path: /docs/$slug/$pageSlug
+    file: src/routes/docs.$slug.$pageSlug.tsx
+    auth_required: false
+    description: Documentation page viewer with markdown rendering, syntax highlighting, mermaid diagrams, and sidebar navigation
+features:
+  - name: User Authentication
+    description: Sign in and sign up with email/password or GitHub OAuth, with session management
+    files:
+      - src/routes/auth.index.tsx
+      - src/routes/auth.tsx
+      - src/lib/auth-client.ts
+    entry_route: /auth
+    user_interactions:
+      - Switch between Sign In and Sign Up tabs
+      - Fill email input field
+      - Fill password input field
+      - Click Sign In or Sign Up button
+      - Click GitHub OAuth button
+      - See validation error messages for invalid inputs
+      - Redirect to /app dashboard on successful authentication
+    api_calls:
+      - method: POST
+        endpoint: /api/auth/sign-in/email
+      - method: POST
+        endpoint: /api/auth/sign-up/email
+    auth_required: false
+  - name: Documentation Dashboard
+    description: View all user documentation projects with status, visibility, and quick actions
+    files:
+      - src/routes/_app.app.index.tsx
+      - src/routes/_app_.app.tsx
+    entry_route: /app
+    user_interactions:
+      - View grid of documentation project cards
+      - See project status badge (generating, failed, completed)
+      - Click View button to open generated documentation
+      - Click Refresh to retry failed generation
+      - Click New Documentation button to start creation wizard
+      - See empty state with onboarding guidance when no projects exist
+    api_calls:
+      - method: GET
+        endpoint: /api/documentation
+    auth_required: true
+  - name: Create Documentation
+    description: Multi-step wizard to create new documentation project with repository links
+    files:
+      - src/routes/_app_.app.new.index.tsx
+    entry_route: /app/new
+    user_interactions:
+      - Enter documentation name in step 1
+      - Select documentation type (onboarding, developer, user) in step 2
+      - Add repository HTTPS URLs in step 3
+      - Select branch for each repository in step 4
+      - Enter custom AI instructions in step 5
+      - Navigate between wizard steps using Next and Back buttons
+      - Submit to start documentation generation
+    api_calls:
+      - method: POST
+        endpoint: /api/documentation
+    auth_required: true
+  - name: Generation Status
+    description: Monitor documentation generation progress with real-time polling
+    files:
+      - src/routes/_app_.app.new.$documentationId.status.tsx
+    entry_route: /app/new/$documentationId/status
+    user_interactions:
+      - View generation progress status
+      - Click Cancel to stop generation
+      - Click Regenerate on failure or completion
+      - Navigate to documentation when generation completes
+    api_calls:
+      - method: GET
+        endpoint: /api/documentation/$id/status
+    auth_required: true
+  - name: Edit Documentation
+    description: Edit documentation settings, manage repositories, and control visibility
+    files:
+      - src/routes/_app_.app.$documentationId.tsx
+    entry_route: /app/$documentationId
+    user_interactions:
+      - Edit documentation name and description
+      - Add or remove repository URLs
+      - Select branches for repositories
+      - Toggle public/private visibility
+      - Click Regenerate to update documentation
+      - Click Delete to remove documentation
+    api_calls:
+      - method: PUT
+        endpoint: /api/documentation/$id
+      - method: DELETE
+        endpoint: /api/documentation/$id
+    auth_required: true
+  - name: View Documentation
+    description: Browse generated documentation with markdown rendering and navigation
+    files:
+      - src/routes/docs.$slug.$pageSlug.tsx
+      - src/routes/docs.$slug.index.tsx
+    entry_route: /docs/$slug
+    user_interactions:
+      - Read markdown content with syntax highlighting
+      - View mermaid diagrams
+      - Navigate pages using sidebar
+      - Click Previous/Next page links
+      - Click Ask AI to interact with AI platforms
+      - Click Edit to modify documentation (if owner)
+    api_calls:
+      - method: GET
+        endpoint: /api/docs/$slug
+    auth_required: false
+  - name: Landing Page
+    description: Marketing landing page with product overview and call-to-action
+    files:
+      - src/routes/_app.index.tsx
+    entry_route: /
+    user_interactions:
+      - View hero section with product description
+      - View feature cards highlighting platform capabilities
+      - Read how-it-works section with 3-step process
+      - Click call-to-action button to get started
+    api_calls: []
+    auth_required: false
+known_limitations:
+  - issue: Only public HTTPS repositories supported, no SSH or private repos
+    location: src/routes/_app_.app.new.index.tsx
+    impact: Users cannot add private repositories or use SSH URLs
+  - issue: Email domain restriction limits sign-up to specific domains
+    location: src/lib/auth.ts
+    impact: Users with non-whitelisted email domains cannot sign up
+  - issue: No collaborative editing or version history for documentation
+    location: src/routes/_app_.app.$documentationId.tsx
+    impact: Only single-user editing, no change tracking
+  - issue: Dev server runs single-threaded and may be unstable under concurrent test load
+    location: vite.config.ts
+    impact: Test stability may be affected when running in development mode
