@@ -2,14 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import {
   getDocumentationPagesForSkill,
   buildSkillMarkdown,
+  skillNameToSlug,
 } from "#/lib/server/agent-skills";
-
-const DOCS_SUFFIX = "-docs";
-
-function skillNameToSlug(skillName: string): string | null {
-  if (!skillName.endsWith(DOCS_SUFFIX)) return null;
-  return skillName.slice(0, -DOCS_SUFFIX.length);
-}
 
 export const Route = createFileRoute(
   "/.well-known/agent-skills/$skillName/SKILL.md",

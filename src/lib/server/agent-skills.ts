@@ -6,10 +6,15 @@ import {
 import { eq, and, asc, inArray } from "drizzle-orm";
 
 const SKILL_NAME_RE = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/;
-const SKILL_SUFFIX = "-docs";
+const SKILL_PREFIX = "archon-docs-";
 
 export function toSkillName(slug: string): string {
-  return `${slug}${SKILL_SUFFIX}`;
+  return `${SKILL_PREFIX}${slug}`;
+}
+
+export function skillNameToSlug(skillName: string): string | null {
+  if (!skillName.startsWith(SKILL_PREFIX)) return null;
+  return skillName.slice(SKILL_PREFIX.length);
 }
 
 export function isValidSkillName(name: string): boolean {
